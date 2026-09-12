@@ -1,0 +1,1 @@
+-- Arquivo reservado para criação do banco de dados do sistema
