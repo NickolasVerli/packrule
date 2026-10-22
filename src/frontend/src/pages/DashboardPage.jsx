@@ -137,7 +137,7 @@ function RecentAnalyses({ analyses, products }) {
                   <p className="list-row__meta">{formatDateTime(analysis.createdAt)}</p>
                 </div>
                 <div style={{ width: 200 }}>
-                  <ColorBar counts={countByClassification(analysis.findings)} />
+                  <ColorBar counts={countByClassification(analysis.findings)} compact />
                 </div>
               </Link>
             </li>

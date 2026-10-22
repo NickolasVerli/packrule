@@ -150,7 +150,7 @@ export function ProductDetailPage() {
                             <p className="list-row__meta">{formatDateTime(analysis.createdAt)}</p>
                           </div>
                           <div style={{ width: 220 }}>
-                            <ColorBar counts={countByClassification(analysis.findings)} />
+                            <ColorBar counts={countByClassification(analysis.findings)} compact />
                           </div>
                         </Link>
                       </li>

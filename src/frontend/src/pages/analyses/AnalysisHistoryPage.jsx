@@ -110,7 +110,7 @@ export function AnalysisHistoryPage() {
                         </td>
                         <td>{formatDate(analysis.referenceDate)}</td>
                         <td style={{ minWidth: 200 }}>
-                          <ColorBar counts={countByClassification(analysis.findings)} />
+                          <ColorBar counts={countByClassification(analysis.findings)} compact />
                         </td>
                         <td>
                           <div className="table__actions">
