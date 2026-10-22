@@ -24,9 +24,8 @@ export function AppLayout() {
     <>
       <header className="topbar">
         <div className="container topbar__inner">
-          <Link to="/" className="brand">
+          <Link to="/" className="brand" aria-label="PackRule, ir para o painel">
             <Logo />
-            PackRule
           </Link>
 
           <nav className="topnav" aria-label="Principal">
