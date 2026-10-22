@@ -32,38 +32,36 @@ export function PackagingDetailPage() {
               description={data.version.fileName}
               actions={
                 <>
-                  <Link to={`/products/${data.product.id}`} className="btn btn--ghost">
+                  <Link to={`/products/${data.product.id}`} className="link-action">
                     Voltar ao produto
                   </Link>
-                  <Link to={`/analyses/new?version=${data.version.id}`} className="btn btn--accent">
+                  <Link to={`/analyses/new?version=${data.version.id}`} className="btn">
                     Analisar esta versão
                   </Link>
                 </>
               }
             />
 
-            <section className="card card__body" aria-label="Dados do arquivo">
-              <dl className="meta-grid">
-                <div>
-                  <dt>Enviado em</dt>
-                  <dd>{formatDateTime(data.version.uploadedAt)}</dd>
-                </div>
-                <div>
-                  <dt>Arquivo</dt>
-                  <dd>
-                    {data.version.fileName} · {formatFileSize(data.version.fileSize)}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Material</dt>
-                  <dd>{data.version.material || '—'}</dd>
-                </div>
-                <div>
-                  <dt>Quantidade declarada</dt>
-                  <dd>{data.version.declaredQuantity || '—'}</dd>
-                </div>
-              </dl>
-            </section>
+            <dl className="meta-list">
+              <div>
+                <dt>Enviado em</dt>
+                <dd>{formatDateTime(data.version.uploadedAt)}</dd>
+              </div>
+              <div>
+                <dt>Arquivo</dt>
+                <dd>
+                  {data.version.fileName} · {formatFileSize(data.version.fileSize)}
+                </dd>
+              </div>
+              <div>
+                <dt>Material</dt>
+                <dd>{data.version.material || '—'}</dd>
+              </div>
+              <div>
+                <dt>Quantidade declarada</dt>
+                <dd>{data.version.declaredQuantity || '—'}</dd>
+              </div>
+            </dl>
 
             <TextReview version={data.version} />
           </>
@@ -93,35 +91,31 @@ function TextReview({ version }) {
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit}>
-      <div className="card__header">
-        <h2>Revisão do texto extraído</h2>
-      </div>
-      <div className="card__body stack">
-        {submitError && <Alert tone="error">{submitError}</Alert>}
-        {!text.trim() && (
-          <Alert tone="warning">
-            Sem texto, todas as regras desta versão terminam em Manual Review.
-          </Alert>
-        )}
-        <FormField
+    <form className="form" onSubmit={handleSubmit}>
+      <h2>Revisão do texto extraído</h2>
+      {submitError && <Alert tone="error">{submitError}</Alert>}
+      {!text.trim() && (
+        <Alert tone="warning">
+          Sem texto, todas as regras desta versão terminam em Manual Review.
+        </Alert>
+      )}
+      <FormField
+        id="text"
+        label="Texto da embalagem"
+        hint="Corrija ou complete o texto antes de executar uma nova análise."
+      >
+        <textarea
           id="text"
-          label="Texto da embalagem"
-          hint="Corrija ou complete o texto antes de executar uma nova análise."
-        >
-          <textarea
-            id="text"
-            className="textarea textarea--mono"
-            rows={10}
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-          />
-        </FormField>
-        <div className="form-actions">
-          <button type="submit" className="btn" disabled={saving}>
-            {saving ? 'Salvando…' : 'Salvar texto'}
-          </button>
-        </div>
+          className="textarea textarea--mono"
+          rows={10}
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+        />
+      </FormField>
+      <div className="form-actions">
+        <button type="submit" className="btn btn--outline" disabled={saving}>
+          {saving ? 'Salvando…' : 'Salvar texto'}
+        </button>
       </div>
     </form>
   )

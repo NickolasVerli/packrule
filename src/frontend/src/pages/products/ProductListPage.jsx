@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { AsyncContent } from '../../components/AsyncContent'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { EmptyState } from '../../components/EmptyState'
-import { Icon } from '../../components/Icon'
 import { PageHeader } from '../../components/PageHeader'
 import { useToast } from '../../context/toastContext'
 import { useAsync } from '../../hooks/useAsync'
@@ -52,21 +51,21 @@ export function ProductListPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Cadastro"
+        eyebrow={data ? pluralize(data.products.length, 'produto', 'produtos') : 'Cadastro'}
         title="Produtos"
         description="Cada produto reúne suas versões de embalagem e o histórico de análises."
         actions={
-          <Link to="/products/new" className="btn btn--accent">
-            <Icon name="plus" /> Novo produto
+          <Link to="/products/new" className="btn">
+            Novo produto
           </Link>
         }
       />
 
       <AsyncContent loading={loading} error={error}>
         {data && (
-          <>
-            <div className="row">
-              <div className="field" style={{ flex: '1 1 260px' }}>
+          <section className="section">
+            <div className="toolbar">
+              <div className="field">
                 <label className="visually-hidden" htmlFor="product-search">
                   Buscar produto
                 </label>
@@ -79,7 +78,7 @@ export function ProductListPage() {
                   onChange={(event) => setSearch(event.target.value)}
                 />
               </div>
-              <div className="field" style={{ flex: '0 1 220px' }}>
+              <div className="field" style={{ flex: '0 1 240px' }}>
                 <label className="visually-hidden" htmlFor="product-category">
                   Filtrar por categoria
                 </label>
@@ -99,76 +98,52 @@ export function ProductListPage() {
               </div>
             </div>
 
-            <div className="card">
-              {filtered.length === 0 ? (
-                <EmptyState
-                  title={data.products.length === 0 ? 'Nenhum produto cadastrado' : 'Nada encontrado'}
-                  description={
-                    data.products.length === 0
-                      ? 'Cadastre o primeiro produto para enviar uma embalagem e executar análises.'
-                      : 'Ajuste a busca ou o filtro de categoria.'
-                  }
-                  action={
-                    data.products.length === 0 && (
-                      <Link to="/products/new" className="btn">
-                        Cadastrar produto
+            {filtered.length === 0 ? (
+              <EmptyState
+                title={data.products.length === 0 ? 'Nenhum produto cadastrado' : 'Nada encontrado'}
+                description={
+                  data.products.length === 0
+                    ? 'Cadastre o primeiro produto para enviar uma embalagem e executar análises.'
+                    : 'Ajuste a busca ou o filtro de categoria.'
+                }
+                action={
+                  data.products.length === 0 && (
+                    <Link to="/products/new" className="btn btn--small">
+                      Cadastrar produto
+                    </Link>
+                  )
+                }
+              />
+            ) : (
+              <ul className="entries">
+                {filtered.map((product) => {
+                  const count = data.versions.filter((v) => v.productId === product.id).length
+                  return (
+                    <li key={product.id} className="entry">
+                      <Link to={`/products/${product.id}`} style={{ textDecoration: 'none' }}>
+                        <p className="entry__title">{product.name}</p>
+                        <p className="entry__meta">
+                          {product.category} · {pluralize(count, 'versão', 'versões')}
+                        </p>
                       </Link>
-                    )
-                  }
-                />
-              ) : (
-                <div className="table-wrap">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Produto</th>
-                        <th>Categoria</th>
-                        <th>Embalagens</th>
-                        <th>
-                          <span className="visually-hidden">Ações</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map((product) => {
-                        const count = data.versions.filter((v) => v.productId === product.id).length
-                        return (
-                          <tr key={product.id}>
-                            <td>
-                              <Link to={`/products/${product.id}`} className="table__title">
-                                {product.name}
-                              </Link>
-                            </td>
-                            <td>
-                              <span className="tag">{product.category}</span>
-                            </td>
-                            <td className="muted">{pluralize(count, 'versão', 'versões')}</td>
-                            <td>
-                              <div className="table__actions">
-                                <Link
-                                  to={`/products/${product.id}/edit`}
-                                  className="btn btn--ghost btn--small"
-                                >
-                                  Editar
-                                </Link>
-                                <button
-                                  type="button"
-                                  className="btn btn--danger btn--small"
-                                  onClick={() => setProductToDelete(product)}
-                                >
-                                  Excluir
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </>
+                      <div className="entry__side">
+                        <Link to={`/products/${product.id}/edit`} className="link-action">
+                          Editar
+                        </Link>
+                        <button
+                          type="button"
+                          className="link-action link-action--danger"
+                          onClick={() => setProductToDelete(product)}
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </section>
         )}
       </AsyncContent>
 

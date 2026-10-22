@@ -68,65 +68,63 @@ function ProductForm({ initialValues, productId }) {
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit} noValidate>
-      <div className="card__body stack">
-        {submitError && <Alert tone="error">{submitError}</Alert>}
+    <form className="form" onSubmit={handleSubmit} noValidate>
+      {submitError && <Alert tone="error">{submitError}</Alert>}
 
-        <div className="form-grid">
-          <FormField id="name" label="Nome do produto" className="form-grid__full">
-            <input
-              id="name"
-              name="name"
-              className="input"
-              value={values.name}
-              onChange={handleChange}
-              placeholder="Ex.: Shampoo Hidratação Profunda 300 ml"
-              required
-            />
-          </FormField>
+      <div className="form-grid">
+        <FormField id="name" label="Nome do produto" className="form-grid__full">
+          <input
+            id="name"
+            name="name"
+            className="input"
+            value={values.name}
+            onChange={handleChange}
+            placeholder="Ex.: Shampoo Hidratação Profunda 300 ml"
+            required
+          />
+        </FormField>
 
-          <FormField id="category" label="Categoria">
-            <select
-              id="category"
-              name="category"
-              className="select"
-              value={values.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Selecione…</option>
-              {CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </FormField>
-
-          <FormField
-            id="description"
-            label="Descrição"
-            hint="Opcional. Contexto sobre o produto e o mercado pretendido."
-            className="form-grid__full"
+        <FormField id="category" label="Categoria" className="form-grid__full">
+          <select
+            id="category"
+            name="category"
+            className="select"
+            value={values.category}
+            onChange={handleChange}
+            required
           >
-            <textarea
-              id="description"
-              name="description"
-              className="textarea"
-              value={values.description}
-              onChange={handleChange}
-            />
-          </FormField>
-        </div>
+            <option value="">Selecione…</option>
+            {CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </FormField>
 
-        <div className="form-actions">
-          <button type="submit" className="btn btn--accent" disabled={saving}>
-            {saving ? 'Salvando…' : 'Salvar produto'}
-          </button>
-          <Link to={productId ? `/products/${productId}` : '/products'} className="btn btn--ghost">
-            Cancelar
-          </Link>
-        </div>
+        <FormField
+          id="description"
+          label="Descrição"
+          hint="Opcional. Contexto sobre o produto e o mercado pretendido."
+          className="form-grid__full"
+        >
+          <textarea
+            id="description"
+            name="description"
+            className="textarea"
+            value={values.description}
+            onChange={handleChange}
+          />
+        </FormField>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="btn" disabled={saving}>
+          {saving ? 'Salvando…' : 'Salvar produto'}
+        </button>
+        <Link to={productId ? `/products/${productId}` : '/products'} className="link-action">
+          Cancelar
+        </Link>
       </div>
     </form>
   )

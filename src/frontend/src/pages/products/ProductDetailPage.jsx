@@ -4,7 +4,6 @@ import { AsyncContent } from '../../components/AsyncContent'
 import { ColorBar } from '../../components/ColorBar'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { EmptyState } from '../../components/EmptyState'
-import { Icon } from '../../components/Icon'
 import { PageHeader } from '../../components/PageHeader'
 import { useToast } from '../../context/toastContext'
 import { useAsync } from '../../hooks/useAsync'
@@ -61,12 +60,12 @@ export function ProductDetailPage() {
               description={data.product.description || undefined}
               actions={
                 <>
-                  <Link to={`/products/${id}/edit`} className="btn btn--ghost">
+                  <Link to={`/products/${id}/edit`} className="link-action">
                     Editar
                   </Link>
                   <button
                     type="button"
-                    className="btn btn--danger"
+                    className="link-action link-action--danger"
                     onClick={() => setConfirming({ type: 'product' })}
                   >
                     Excluir
@@ -75,11 +74,11 @@ export function ProductDetailPage() {
               }
             />
 
-            <section className="card" aria-labelledby="versions-title">
-              <div className="card__header">
+            <section className="section" aria-labelledby="versions-title">
+              <div className="section__header">
                 <h2 id="versions-title">Versões da embalagem</h2>
-                <Link to={`/products/${id}/versions/new`} className="btn btn--small">
-                  <Icon name="plus" size={16} /> Nova versão
+                <Link to={`/products/${id}/versions/new`} className="btn btn--outline btn--small">
+                  Nova versão
                 </Link>
               </div>
 
@@ -89,32 +88,34 @@ export function ProductDetailPage() {
                   description="Envie o arquivo da embalagem em PDF, PNG ou JPG para poder analisá-la."
                 />
               ) : (
-                <ul>
+                <ul className="entries">
                   {data.versions.map((version) => (
-                    <li key={version.id} className="version-card">
-                      <span className="version-card__number">v{version.number}</span>
+                    <li key={version.id} className="version-entry">
+                      <span className="version-number">v{version.number}</span>
                       <div>
-                        <Link to={`/versions/${version.id}`} className="table__title">
+                        <Link
+                          to={`/versions/${version.id}`}
+                          className="entry__title"
+                          style={{ textDecoration: 'none' }}
+                        >
                           {version.fileName}
                         </Link>
-                        <p className="list-row__meta">
+                        <p className="entry__meta">
                           {formatDateTime(version.uploadedAt)} · {formatFileSize(version.fileSize)}
                           {version.material && ` · ${version.material}`}
                         </p>
-                        <p className="version-card__excerpt">
-                          {version.extractedText || 'Sem texto extraído. A análise indicará Manual Review.'}
+                        <p className="version-entry__excerpt">
+                          {version.extractedText ||
+                            'Sem texto extraído. A análise indicará Manual Review.'}
                         </p>
                       </div>
-                      <div className="row version-card__actions">
-                        <Link
-                          to={`/analyses/new?version=${version.id}`}
-                          className="btn btn--small"
-                        >
+                      <div className="version-entry__actions">
+                        <Link to={`/analyses/new?version=${version.id}`} className="btn btn--small">
                           Analisar
                         </Link>
                         <button
                           type="button"
-                          className="btn btn--danger btn--small"
+                          className="link-action link-action--danger"
                           onClick={() => setConfirming({ type: 'version', version })}
                         >
                           Excluir
@@ -126,8 +127,8 @@ export function ProductDetailPage() {
               )}
             </section>
 
-            <section className="card" aria-labelledby="analyses-title">
-              <div className="card__header">
+            <section className="section" aria-labelledby="analyses-title">
+              <div className="section__header">
                 <h2 id="analyses-title">Análises realizadas</h2>
               </div>
               {data.analyses.length === 0 ? (
@@ -136,21 +137,23 @@ export function ProductDetailPage() {
                   description="As análises executadas para este produto aparecerão aqui."
                 />
               ) : (
-                <ul>
+                <ul className="entries">
                   {data.analyses.map((analysis) => {
                     const version = data.versions.find((v) => v.id === analysis.versionId)
                     return (
                       <li key={analysis.id}>
-                        <Link to={`/analyses/${analysis.id}`} className="list-row">
+                        <Link to={`/analyses/${analysis.id}`} className="entry entry--link">
                           <div>
-                            <p className="list-row__title">
+                            <p className="entry__title">
                               Versão v{version?.number ?? '?'} · referência{' '}
                               {formatDate(analysis.referenceDate)}
                             </p>
-                            <p className="list-row__meta">{formatDateTime(analysis.createdAt)}</p>
+                            <p className="entry__meta">{formatDateTime(analysis.createdAt)}</p>
                           </div>
-                          <div style={{ width: 220 }}>
-                            <ColorBar counts={countByClassification(analysis.findings)} compact />
+                          <div className="entry__side" style={{ width: 150 }}>
+                            <div style={{ flex: 1 }}>
+                              <ColorBar counts={countByClassification(analysis.findings)} />
+                            </div>
                           </div>
                         </Link>
                       </li>

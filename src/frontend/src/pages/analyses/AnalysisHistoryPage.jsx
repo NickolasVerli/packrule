@@ -4,7 +4,6 @@ import { AsyncContent } from '../../components/AsyncContent'
 import { ColorBar } from '../../components/ColorBar'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { EmptyState } from '../../components/EmptyState'
-import { Icon } from '../../components/Icon'
 import { PageHeader } from '../../components/PageHeader'
 import { useToast } from '../../context/toastContext'
 import { useAsync } from '../../hooks/useAsync'
@@ -14,7 +13,7 @@ import { marketService } from '../../services/marketService'
 import { packagingService } from '../../services/packagingService'
 import { productService } from '../../services/productService'
 import { countByClassification, indexById } from '../../utils/analysis'
-import { formatDate, formatDateTime } from '../../utils/format'
+import { formatDate, formatDateTime, pluralize } from '../../utils/format'
 
 export function AnalysisHistoryPage() {
   useDocumentTitle('Histórico de análises')
@@ -50,93 +49,64 @@ export function AnalysisHistoryPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Registro"
-        title="Histórico de análises"
+        eyebrow={data ? pluralize(data.analyses.length, 'análise', 'análises') : 'Registro'}
+        title="Histórico"
         description="Cada análise fica vinculada ao produto e à versão exata da embalagem que foi verificada."
         actions={
-          <Link to="/analyses/new" className="btn btn--accent">
-            <Icon name="plus" /> Nova análise
+          <Link to="/analyses/new" className="btn">
+            Nova análise
           </Link>
         }
       />
 
       <AsyncContent loading={loading} error={error}>
-        {data && (
-          <div className="card">
-            {data.analyses.length === 0 ? (
-              <EmptyState
-                title="Nenhuma análise executada"
-                description="Execute a primeira análise para ver os resultados aqui."
-                action={
-                  <Link to="/analyses/new" className="btn">
-                    Executar análise
+        {data &&
+          (data.analyses.length === 0 ? (
+            <EmptyState
+              title="Nenhuma análise executada"
+              description="Execute a primeira análise para ver os resultados aqui."
+              action={
+                <Link to="/analyses/new" className="btn btn--small">
+                  Executar análise
+                </Link>
+              }
+            />
+          ) : (
+            <ul className="entries">
+              {data.analyses.map((analysis) => (
+                <li key={analysis.id} className="entry">
+                  <Link to={`/analyses/${analysis.id}`} style={{ textDecoration: 'none' }}>
+                    <p className="entry__title">
+                      {data.products[analysis.productId]?.name ?? 'Produto removido'}
+                    </p>
+                    <p className="entry__meta">
+                      v{data.versions[analysis.versionId]?.number ?? '?'} ·{' '}
+                      {analysis.marketIds
+                        .map((marketId) => data.markets[marketId]?.code)
+                        .join(' · ')}{' '}
+                      · ref. {formatDate(analysis.referenceDate)} ·{' '}
+                      {formatDateTime(analysis.createdAt)}
+                    </p>
                   </Link>
-                }
-              />
-            ) : (
-              <div className="table-wrap">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Produto</th>
-                      <th>Mercados</th>
-                      <th>Referência</th>
-                      <th>Resultado</th>
-                      <th>
-                        <span className="visually-hidden">Ações</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.analyses.map((analysis) => (
-                      <tr key={analysis.id}>
-                        <td>
-                          <Link to={`/analyses/${analysis.id}`} className="table__title">
-                            {data.products[analysis.productId]?.name ?? 'Produto removido'}
-                          </Link>
-                          <p className="list-row__meta">
-                            v{data.versions[analysis.versionId]?.number ?? '?'} ·{' '}
-                            {formatDateTime(analysis.createdAt)}
-                          </p>
-                        </td>
-                        <td>
-                          <div className="row" style={{ gap: 4 }}>
-                            {analysis.marketIds.map((marketId) => (
-                              <span key={marketId} className="tag">
-                                {data.markets[marketId]?.code}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td>{formatDate(analysis.referenceDate)}</td>
-                        <td style={{ minWidth: 200 }}>
-                          <ColorBar counts={countByClassification(analysis.findings)} compact />
-                        </td>
-                        <td>
-                          <div className="table__actions">
-                            <Link
-                              to={`/analyses/${analysis.id}`}
-                              className="btn btn--ghost btn--small"
-                            >
-                              Abrir
-                            </Link>
-                            <button
-                              type="button"
-                              className="btn btn--danger btn--small"
-                              onClick={() => setAnalysisToDelete(analysis)}
-                            >
-                              Excluir
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+                  <div className="entry__side">
+                    <div style={{ width: 150 }}>
+                      <ColorBar counts={countByClassification(analysis.findings)} />
+                    </div>
+                    <Link to={`/analyses/${analysis.id}`} className="link-action">
+                      Abrir
+                    </Link>
+                    <button
+                      type="button"
+                      className="link-action link-action--danger"
+                      onClick={() => setAnalysisToDelete(analysis)}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ))}
       </AsyncContent>
 
       <ConfirmDialog

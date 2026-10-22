@@ -60,78 +60,76 @@ function PackagingForm({ productId }) {
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit} noValidate>
-      <div className="card__body stack">
-        {submitError && <Alert tone="error">{submitError}</Alert>}
+    <form className="form" onSubmit={handleSubmit} noValidate>
+      {submitError && <Alert tone="error">{submitError}</Alert>}
 
-        <FormField id="file" label="Arquivo da embalagem" hint="PDF, PNG ou JPG, até 10 MB.">
-          <label className={`file-drop ${file ? 'file-drop--filled' : ''}`} htmlFor="file">
-            <Icon name="file" size={28} />
-            {file ? (
-              <>
-                <strong>{file.name}</strong>
-                <span className="muted">{formatFileSize(file.size)} · clique para trocar</span>
-              </>
-            ) : (
-              <>
-                <strong>Escolher arquivo</strong>
-                <span className="muted">Selecione a arte da embalagem</span>
-              </>
-            )}
-            <input
-              id="file"
-              type="file"
-              className="visually-hidden"
-              accept={ACCEPTED_FILE_EXTENSIONS}
-              onChange={(event) => setFile(event.target.files[0] ?? null)}
-            />
-          </label>
+      <FormField id="file" label="Arquivo da embalagem" hint="PDF, PNG ou JPG, até 10 MB.">
+        <label className={`file-drop ${file ? 'file-drop--filled' : ''}`} htmlFor="file">
+          <Icon name="file" size={26} />
+          {file ? (
+            <>
+              <strong>{file.name}</strong>
+              <span className="muted">{formatFileSize(file.size)} · clique para trocar</span>
+            </>
+          ) : (
+            <>
+              <strong>Escolher arquivo</strong>
+              <span className="muted">Selecione a arte da embalagem</span>
+            </>
+          )}
+          <input
+            id="file"
+            type="file"
+            className="visually-hidden"
+            accept={ACCEPTED_FILE_EXTENSIONS}
+            onChange={(event) => setFile(event.target.files[0] ?? null)}
+          />
+        </label>
+      </FormField>
+
+      <div className="form-grid">
+        <FormField id="material" label="Material" hint="Opcional. Ex.: PET reciclável.">
+          <input
+            id="material"
+            name="material"
+            className="input"
+            value={values.material}
+            onChange={handleChange}
+          />
         </FormField>
-
-        <div className="form-grid">
-          <FormField id="material" label="Material da embalagem" hint="Opcional. Ex.: PET reciclável.">
-            <input
-              id="material"
-              name="material"
-              className="input"
-              value={values.material}
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField id="declaredQuantity" label="Quantidade declarada" hint="Opcional. Ex.: 300 ml.">
-            <input
-              id="declaredQuantity"
-              name="declaredQuantity"
-              className="input"
-              value={values.declaredQuantity}
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField
+        <FormField id="declaredQuantity" label="Quantidade declarada" hint="Opcional. Ex.: 300 ml.">
+          <input
+            id="declaredQuantity"
+            name="declaredQuantity"
+            className="input"
+            value={values.declaredQuantity}
+            onChange={handleChange}
+          />
+        </FormField>
+        <FormField
+          id="extractedText"
+          label="Texto da embalagem"
+          hint="Cole ou digite os textos impressos. As regras são verificadas sobre este conteúdo, e você pode revisá-lo antes de cada análise."
+          className="form-grid__full"
+        >
+          <textarea
             id="extractedText"
-            label="Texto da embalagem"
-            hint="Cole ou digite os textos impressos na embalagem. As regras são verificadas sobre este conteúdo e você pode revisá-lo antes de cada análise."
-            className="form-grid__full"
-          >
-            <textarea
-              id="extractedText"
-              name="extractedText"
-              className="textarea textarea--mono"
-              rows={8}
-              value={values.extractedText}
-              onChange={handleChange}
-            />
-          </FormField>
-        </div>
+            name="extractedText"
+            className="textarea textarea--mono"
+            rows={8}
+            value={values.extractedText}
+            onChange={handleChange}
+          />
+        </FormField>
+      </div>
 
-        <div className="form-actions">
-          <button type="submit" className="btn btn--accent" disabled={saving}>
-            {saving ? 'Enviando…' : 'Enviar embalagem'}
-          </button>
-          <Link to={`/products/${productId}`} className="btn btn--ghost">
-            Cancelar
-          </Link>
-        </div>
+      <div className="form-actions">
+        <button type="submit" className="btn" disabled={saving}>
+          {saving ? 'Enviando…' : 'Enviar embalagem'}
+        </button>
+        <Link to={`/products/${productId}`} className="link-action">
+          Cancelar
+        </Link>
       </div>
     </form>
   )

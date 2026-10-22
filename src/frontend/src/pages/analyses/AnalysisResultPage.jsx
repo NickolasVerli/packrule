@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { Alert } from '../../components/Alert'
 import { AsyncContent } from '../../components/AsyncContent'
 import { ClassificationBadge } from '../../components/ClassificationBadge'
-import { ColorBar } from '../../components/ColorBar'
 import { EmptyState } from '../../components/EmptyState'
+import { FactsPanel } from '../../components/FactsPanel'
 import { PageHeader } from '../../components/PageHeader'
 import { useAsync } from '../../hooks/useAsync'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
@@ -14,8 +14,10 @@ import { packagingService } from '../../services/packagingService'
 import { productService } from '../../services/productService'
 import { ruleService } from '../../services/ruleService'
 import { countByClassification, indexById } from '../../utils/analysis'
-import { CLASSIFICATIONS } from '../../utils/constants'
 import { formatDate, formatDateTime } from '../../utils/format'
+
+const FACTS_NOTE =
+  '* Passed indica apenas que a regra verificada foi atendida com base no texto informado. Não é certificação nem garantia jurídica de comercialização.'
 
 export function AnalysisResultPage() {
   const { id } = useParams()
@@ -47,11 +49,19 @@ function AnalysisResult({ analysis, product, version, markets, rules }) {
   const [marketFilter, setMarketFilter] = useState('')
 
   const counts = useMemo(() => countByClassification(analysis.findings), [analysis.findings])
-  const visibleFindings = analysis.findings.filter(
-    (finding) =>
-      (!classificationFilter || finding.classification === classificationFilter) &&
-      (!marketFilter || finding.marketId === marketFilter),
-  )
+
+  const groups = analysis.marketIds
+    .filter((marketId) => !marketFilter || marketId === marketFilter)
+    .map((marketId) => ({
+      marketId,
+      findings: analysis.findings.filter(
+        (finding) =>
+          finding.marketId === marketId &&
+          (!classificationFilter || finding.classification === classificationFilter),
+      ),
+    }))
+    .filter((group) => group.findings.length > 0)
+
   const marketsWithoutRules = analysis.marketIds.filter(
     (marketId) => !analysis.findings.some((finding) => finding.marketId === marketId),
   )
@@ -64,11 +74,11 @@ function AnalysisResult({ analysis, product, version, markets, rules }) {
         description={`Versão v${version?.number ?? '?'} · referência em ${formatDate(analysis.referenceDate)}`}
         actions={
           <>
-            <Link to="/analyses" className="btn btn--ghost">
+            <Link to="/analyses" className="link-action">
               Histórico
             </Link>
             {version && (
-              <Link to={`/analyses/new?version=${version.id}`} className="btn btn--accent">
+              <Link to={`/analyses/new?version=${version.id}`} className="btn">
                 Nova análise
               </Link>
             )}
@@ -76,58 +86,21 @@ function AnalysisResult({ analysis, product, version, markets, rules }) {
         }
       />
 
-      <section className="proof card__body" aria-label="Resumo da análise">
-        <ColorBar counts={counts} />
-        <p className="muted" style={{ marginTop: 12 }}>
-          Mercados:{' '}
-          {analysis.marketIds.map((marketId) => markets[marketId]?.name).filter(Boolean).join(', ')}
-        </p>
-      </section>
-
-      <Alert tone="info">
-        Passed indica apenas que a regra verificada foi atendida com base no texto informado. O
-        resultado não é certificação nem garantia jurídica de comercialização.
-      </Alert>
-
-      {marketsWithoutRules.length > 0 && (
-        <Alert tone="warning">
-          Nenhuma regra vigente foi encontrada para{' '}
-          {marketsWithoutRules.map((marketId) => markets[marketId]?.name).join(', ')} nessa data e
-          categoria. Considere uma revisão manual.
-        </Alert>
-      )}
-
-      {analysis.findings.length > 0 && (
-        <div className="stack">
-          <div className="tabs" role="group" aria-label="Filtrar por classificação">
-            <button
-              type="button"
-              className="tab"
-              aria-pressed={classificationFilter === ''}
-              onClick={() => setClassificationFilter('')}
-            >
-              Todos ({analysis.findings.length})
-            </button>
-            {Object.entries(CLASSIFICATIONS)
-              .filter(([key]) => counts[key] > 0)
-              .map(([key, classification]) => (
-                <button
-                  key={key}
-                  type="button"
-                  className="tab"
-                  aria-pressed={classificationFilter === key}
-                  onClick={() => setClassificationFilter(key)}
-                >
-                  {classification.label} ({counts[key]})
-                </button>
-              ))}
-          </div>
+      <div className="split">
+        <div className="stack" style={{ gap: 36 }}>
+          {marketsWithoutRules.length > 0 && (
+            <Alert tone="warning">
+              Nenhuma regra vigente foi encontrada para{' '}
+              {marketsWithoutRules.map((marketId) => markets[marketId]?.name).join(', ')} nessa data
+              e categoria. Considere uma revisão manual.
+            </Alert>
+          )}
 
           {analysis.marketIds.length > 1 && (
-            <div className="tabs" role="group" aria-label="Filtrar por mercado">
+            <div className="filter-tabs" role="group" aria-label="Filtrar por mercado">
               <button
                 type="button"
-                className="tab"
+                className="filter-tab"
                 aria-pressed={marketFilter === ''}
                 onClick={() => setMarketFilter('')}
               >
@@ -137,7 +110,7 @@ function AnalysisResult({ analysis, product, version, markets, rules }) {
                 <button
                   key={marketId}
                   type="button"
-                  className="tab"
+                  className="filter-tab"
                   aria-pressed={marketFilter === marketId}
                   onClick={() => setMarketFilter(marketId)}
                 >
@@ -146,40 +119,50 @@ function AnalysisResult({ analysis, product, version, markets, rules }) {
               ))}
             </div>
           )}
-        </div>
-      )}
 
-      <section className="card" aria-label="Resultados">
-        {visibleFindings.length === 0 ? (
-          <EmptyState
-            title="Nenhum resultado para mostrar"
-            description="Não há verificações com esse filtro."
+          {groups.length === 0 ? (
+            <EmptyState
+              title="Nenhum resultado para mostrar"
+              description="Não há verificações com esse filtro."
+            />
+          ) : (
+            groups.map((group) => (
+              <section key={group.marketId} className="market-group">
+                <div className="market-group__title">
+                  <h2>{markets[group.marketId]?.name}</h2>
+                  <span className="code">{markets[group.marketId]?.code}</span>
+                </div>
+                <ul className="entries">
+                  {group.findings.map((finding) => {
+                    const rule = rules[finding.ruleId]
+                    return (
+                      <li key={finding.id} className="finding">
+                        <ClassificationBadge classification={finding.classification} />
+                        <div className="finding__body">
+                          <h3>{rule?.title ?? 'Regra removida'}</h3>
+                          <p className="muted">{finding.explanation}</p>
+                          {rule && <p className="finding__source">{rule.source}</p>}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </section>
+            ))
+          )}
+        </div>
+
+        <div className="split__aside">
+          <FactsPanel
+            title="Compliance Facts"
+            subtitle={`${analysis.findings.length} verificações · filtre por resultado`}
+            counts={counts}
+            selected={classificationFilter}
+            onSelect={setClassificationFilter}
+            note={FACTS_NOTE}
           />
-        ) : (
-          <ul>
-            {visibleFindings.map((finding) => {
-              const rule = rules[finding.ruleId]
-              return (
-                <li
-                  key={finding.id}
-                  className={`finding finding--${finding.classification.toLowerCase()}`}
-                >
-                  <span className="finding__rail" />
-                  <div className="finding__body">
-                    <div className="finding__head">
-                      <ClassificationBadge classification={finding.classification} />
-                      <span className="tag">{markets[finding.marketId]?.code}</span>
-                      <h3>{rule?.title ?? 'Regra removida'}</h3>
-                    </div>
-                    <p>{finding.explanation}</p>
-                    {rule && <p className="finding__source">{rule.source}</p>}
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </section>
+        </div>
+      </div>
     </>
   )
 }

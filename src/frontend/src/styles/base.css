@@ -1,35 +1,23 @@
 :root {
-  --ink: #14171f;
-  --ink-soft: #2b303c;
-  --muted: #5d6472;
-  --paper: #eef0ed;
-  --surface: #ffffff;
-  --line: #d8dbd4;
-  --line-strong: #b9bdb3;
+  --ink: #111111;
+  --muted: #6a6a6a;
+  --bg: #ffffff;
+  --fill: #f4f4f2;
+  --line: #e2e2df;
 
-  --magenta: #e5006d;
-  --magenta-tint: #fde6f0;
-  --amber: #f0a800;
-  --amber-tint: #fff3d1;
-  --cyan: #0a8fb8;
-  --cyan-tint: #dff2f8;
-  --key: #5d6472;
-  --key-tint: #e6e8ec;
+  --critical: #e8381a;
+  --warning: #f5b700;
+  --passed: #12805c;
+  --review: #7d7d7d;
+  --focus: #2b4bff;
 
-  --font-display: 'Familjen Grotesk', 'Segoe UI', sans-serif;
-  --font-body: 'Instrument Sans', 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', Consolas, monospace;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Schibsted Grotesk', 'Segoe UI', sans-serif;
+  --font-mono: 'DM Mono', Consolas, monospace;
 
-  --radius: 4px;
-  --sidebar-width: 248px;
-  --content-width: 1080px;
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 3rem;
+  --container: 1120px;
+  --gutter: 32px;
+  --radius: 12px;
 }
 
 *,
@@ -44,12 +32,17 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #ffe45c;
+  color: var(--ink);
 }
 
 h1,
@@ -63,21 +56,25 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.005em;
 }
 
 h1 {
-  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+  font-size: clamp(2.8rem, 7vw, 5rem);
 }
 
 h2 {
-  font-size: 1.25rem;
+  font-size: 1.9rem;
 }
 
 h3 {
+  font-family: var(--font-body);
   font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
 a {
@@ -99,13 +96,12 @@ ul {
 }
 
 :focus-visible {
-  outline: 2px solid var(--magenta);
-  outline-offset: 2px;
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
 }
 
 .mono {
   font-family: var(--font-mono);
-  font-size: 0.85em;
 }
 
 .muted {
@@ -122,6 +118,12 @@ ul {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --gutter: 18px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

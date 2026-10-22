@@ -16,10 +16,10 @@ export function ConfirmDialog({ open, title, message, confirmLabel, onConfirm, o
         <p className="muted">{message}</p>
       </div>
       <div className="dialog__actions">
-        <button type="button" className="btn btn--ghost" onClick={onCancel}>
+        <button type="button" className="btn btn--outline btn--small" onClick={onCancel}>
           Cancelar
         </button>
-        <button type="button" className="btn btn--accent" onClick={onConfirm}>
+        <button type="button" className="btn btn--small" onClick={onConfirm}>
           {confirmLabel}
         </button>
       </div>

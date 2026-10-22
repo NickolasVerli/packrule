@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AsyncContent } from '../../components/AsyncContent'
+import { ClassificationBadge } from '../../components/ClassificationBadge'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
 import { EmptyState } from '../../components/EmptyState'
-import { Icon } from '../../components/Icon'
 import { PageHeader } from '../../components/PageHeader'
 import { useToast } from '../../context/toastContext'
 import { useAsync } from '../../hooks/useAsync'
@@ -12,7 +12,7 @@ import { isRuleInEffect } from '../../services/complianceEngine'
 import { marketService } from '../../services/marketService'
 import { ruleService } from '../../services/ruleService'
 import { ALL_CATEGORIES, RULE_TYPES } from '../../utils/constants'
-import { formatDate, todayIso } from '../../utils/format'
+import { formatDate, pluralize, todayIso } from '../../utils/format'
 
 function getRuleStatus(rule, today) {
   if (rule.startDate > today) return 'Futura'
@@ -50,117 +50,91 @@ export function RuleListPage() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Base de conhecimento"
+        eyebrow={data ? pluralize(data.rules.length, 'regra', 'regras') : 'Base de conhecimento'}
         title="Regras de conformidade"
         description="Cada regra declara mercado, categoria, vigência e fonte. A data de referência da análise decide quais delas entram."
         actions={
-          <Link to="/rules/new" className="btn btn--accent">
-            <Icon name="plus" /> Nova regra
+          <Link to="/rules/new" className="btn">
+            Nova regra
           </Link>
         }
       />
 
       <AsyncContent loading={loading} error={error}>
         {data && (
-          <>
-            <div className="field" style={{ maxWidth: 260 }}>
-              <label className="visually-hidden" htmlFor="rule-market">
-                Filtrar por mercado
-              </label>
-              <select
-                id="rule-market"
-                className="select"
-                value={marketFilter}
-                onChange={(event) => setMarketFilter(event.target.value)}
+          <section className="section">
+            <div className="filter-tabs" role="group" aria-label="Filtrar por mercado">
+              <button
+                type="button"
+                className="filter-tab"
+                aria-pressed={marketFilter === ''}
+                onClick={() => setMarketFilter('')}
               >
-                <option value="">Todos os mercados</option>
-                {data.markets.map((market) => (
-                  <option key={market.id} value={market.id}>
-                    {market.name}
-                  </option>
-                ))}
-              </select>
+                Todos
+              </button>
+              {data.markets.map((market) => (
+                <button
+                  key={market.id}
+                  type="button"
+                  className="filter-tab"
+                  aria-pressed={marketFilter === market.id}
+                  onClick={() => setMarketFilter(market.id)}
+                >
+                  {market.name}
+                </button>
+              ))}
             </div>
 
-            <div className="card">
-              {filtered.length === 0 ? (
-                <EmptyState
-                  title="Nenhuma regra encontrada"
-                  description="Cadastre uma regra ou altere o filtro de mercado."
-                />
-              ) : (
-                <div className="table-wrap">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Regra</th>
-                        <th>Mercados</th>
-                        <th>Categoria</th>
-                        <th>Severidade</th>
-                        <th>Vigência</th>
-                        <th>
-                          <span className="visually-hidden">Ações</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map((rule) => (
-                        <tr key={rule.id}>
-                          <td>
-                            <Link to={`/rules/${rule.id}/edit`} className="table__title">
-                              {rule.title}
-                            </Link>
-                            <p className="list-row__meta">
-                              {RULE_TYPES[rule.type].label} · {rule.source}
-                            </p>
-                          </td>
-                          <td>
-                            <div className="row" style={{ gap: 4 }}>
-                              {rule.marketIds.map((marketId) => (
-                                <span key={marketId} className="tag">
-                                  {data.markets.find((m) => m.id === marketId)?.code}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-                          <td>{rule.category === ALL_CATEGORIES ? 'Todas' : rule.category}</td>
-                          <td>
-                            <span className={`badge badge--${rule.severity.toLowerCase()}`}>
-                              {rule.severity === 'CRITICAL' ? 'Critical' : 'Warning'}
-                            </span>
-                          </td>
-                          <td>
-                            <p>{getRuleStatus(rule, today)}</p>
-                            <p className="list-row__meta">
-                              desde {formatDate(rule.startDate)}
-                              {rule.endDate && ` até ${formatDate(rule.endDate)}`}
-                            </p>
-                          </td>
-                          <td>
-                            <div className="table__actions">
-                              <Link
-                                to={`/rules/${rule.id}/edit`}
-                                className="btn btn--ghost btn--small"
-                              >
-                                Editar
-                              </Link>
-                              <button
-                                type="button"
-                                className="btn btn--danger btn--small"
-                                onClick={() => setRuleToDelete(rule)}
-                              >
-                                Excluir
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </>
+            {filtered.length === 0 ? (
+              <EmptyState
+                title="Nenhuma regra encontrada"
+                description="Cadastre uma regra ou altere o filtro de mercado."
+              />
+            ) : (
+              <ul className="entries">
+                {filtered.map((rule) => (
+                  <li key={rule.id} className="entry">
+                    <div>
+                      <Link
+                        to={`/rules/${rule.id}/edit`}
+                        className="entry__title"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        {rule.title}
+                      </Link>
+                      <p className="entry__meta">
+                        {RULE_TYPES[rule.type].label} ·{' '}
+                        {rule.category === ALL_CATEGORIES ? 'Todas as categorias' : rule.category} ·{' '}
+                        {getRuleStatus(rule, today)} desde {formatDate(rule.startDate)}
+                        {rule.endDate && ` até ${formatDate(rule.endDate)}`}
+                      </p>
+                      <p className="entry__meta">{rule.source}</p>
+                    </div>
+                    <div className="entry__side">
+                      <div className="cluster" style={{ gap: 6 }}>
+                        {rule.marketIds.map((marketId) => (
+                          <span key={marketId} className="code">
+                            {data.markets.find((market) => market.id === marketId)?.code}
+                          </span>
+                        ))}
+                      </div>
+                      <ClassificationBadge classification={rule.severity} />
+                      <Link to={`/rules/${rule.id}/edit`} className="link-action">
+                        Editar
+                      </Link>
+                      <button
+                        type="button"
+                        className="link-action link-action--danger"
+                        onClick={() => setRuleToDelete(rule)}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         )}
       </AsyncContent>
 

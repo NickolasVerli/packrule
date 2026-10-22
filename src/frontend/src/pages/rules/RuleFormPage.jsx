@@ -57,10 +57,7 @@ export function RuleFormPage() {
 function RuleForm({ markets, initialRule, ruleId }) {
   const navigate = useNavigate()
   const { notify } = useToast()
-  const [values, setValues] = useState({
-    ...initialRule,
-    terms: initialRule.terms.join(', '),
-  })
+  const [values, setValues] = useState({ ...initialRule, terms: initialRule.terms.join(', ') })
   const [submitError, setSubmitError] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -94,156 +91,153 @@ function RuleForm({ markets, initialRule, ruleId }) {
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit} noValidate>
-      <div className="card__body stack">
-        {submitError && <Alert tone="error">{submitError}</Alert>}
+    <form className="form" onSubmit={handleSubmit} noValidate>
+      {submitError && <Alert tone="error">{submitError}</Alert>}
 
-        <div className="form-grid">
-          <FormField id="title" label="Título" className="form-grid__full">
-            <input
-              id="title"
-              name="title"
-              className="input"
-              value={values.title}
-              onChange={handleChange}
-              required
-            />
-          </FormField>
+      <div className="form-grid">
+        <FormField id="title" label="Título" className="form-grid__full">
+          <input
+            id="title"
+            name="title"
+            className="input"
+            value={values.title}
+            onChange={handleChange}
+            required
+          />
+        </FormField>
 
-          <FormField id="description" label="Descrição" className="form-grid__full">
-            <textarea
-              id="description"
-              name="description"
-              className="textarea"
-              rows={3}
-              value={values.description}
-              onChange={handleChange}
-              required
-            />
-          </FormField>
+        <FormField id="description" label="Descrição" className="form-grid__full">
+          <textarea
+            id="description"
+            name="description"
+            className="textarea"
+            rows={3}
+            value={values.description}
+            onChange={handleChange}
+            required
+          />
+        </FormField>
 
-          <FormField id="type" label="Tipo" hint={RULE_TYPES[values.type]?.hint}>
-            <select id="type" name="type" className="select" value={values.type} onChange={handleChange}>
-              {Object.entries(RULE_TYPES).map(([key, type]) => (
-                <option key={key} value={key}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </FormField>
+        <FormField id="type" label="Tipo" hint={RULE_TYPES[values.type]?.hint}>
+          <select id="type" name="type" className="select" value={values.type} onChange={handleChange}>
+            {Object.entries(RULE_TYPES).map(([key, type]) => (
+              <option key={key} value={key}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+        </FormField>
 
-          <FormField id="severity" label="Severidade" hint="Classificação usada quando a regra não é atendida.">
-            <select
-              id="severity"
-              name="severity"
-              className="select"
-              value={values.severity}
-              onChange={handleChange}
-            >
-              {Object.entries(SEVERITIES).map(([key, label]) => (
-                <option key={key} value={key}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </FormField>
-
-          <FormField id="category" label="Categoria de produto">
-            <select
-              id="category"
-              name="category"
-              className="select"
-              value={values.category}
-              onChange={handleChange}
-            >
-              <option value={ALL_CATEGORIES}>Todas as categorias</option>
-              {CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </FormField>
-
-          <FormField id="source" label="Fonte" hint="Norma, artigo ou documento de origem.">
-            <input
-              id="source"
-              name="source"
-              className="input"
-              value={values.source}
-              onChange={handleChange}
-              required
-            />
-          </FormField>
-
-          <FormField
-            id="terms"
-            label="Termos de verificação"
-            hint="Separe por vírgula ou quebra de linha. A busca ignora maiúsculas e acentos."
-            className="form-grid__full"
+        <FormField id="severity" label="Severidade" hint="Usada quando a regra não é atendida.">
+          <select
+            id="severity"
+            name="severity"
+            className="select"
+            value={values.severity}
+            onChange={handleChange}
           >
-            <textarea
-              id="terms"
-              name="terms"
-              className="textarea textarea--mono"
-              rows={3}
-              value={values.terms}
-              onChange={handleChange}
-              required
-            />
-          </FormField>
+            {Object.entries(SEVERITIES).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </FormField>
 
-          <fieldset className="form-grid__full field" style={{ border: 0, padding: 0, margin: 0 }}>
-            <legend className="field__label" style={{ padding: 0, marginBottom: 8 }}>
-              Mercados aplicáveis
-            </legend>
-            <div className="choice-grid">
-              {markets.map((market) => (
-                <label key={market.id} className="choice">
-                  <input
-                    type="checkbox"
-                    checked={values.marketIds.includes(market.id)}
-                    onChange={() => toggleMarket(market.id)}
-                  />
-                  <span>{market.name}</span>
-                  <span className="choice__code">{market.code}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+        <FormField id="category" label="Categoria de produto">
+          <select
+            id="category"
+            name="category"
+            className="select"
+            value={values.category}
+            onChange={handleChange}
+          >
+            <option value={ALL_CATEGORIES}>Todas as categorias</option>
+            {CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </FormField>
 
-          <FormField id="startDate" label="Início da vigência">
-            <input
-              id="startDate"
-              name="startDate"
-              type="date"
-              className="input"
-              value={values.startDate}
-              onChange={handleChange}
-              required
-            />
-          </FormField>
+        <FormField id="source" label="Fonte" hint="Norma, artigo ou documento de origem.">
+          <input
+            id="source"
+            name="source"
+            className="input"
+            value={values.source}
+            onChange={handleChange}
+            required
+          />
+        </FormField>
 
-          <FormField id="endDate" label="Fim da vigência" hint="Opcional. Deixe vazio se a regra não tem prazo final.">
-            <input
-              id="endDate"
-              name="endDate"
-              type="date"
-              className="input"
-              value={values.endDate}
-              onChange={handleChange}
-            />
-          </FormField>
-        </div>
+        <FormField
+          id="terms"
+          label="Termos de verificação"
+          hint="Separe por vírgula ou quebra de linha. A busca ignora maiúsculas e acentos."
+          className="form-grid__full"
+        >
+          <textarea
+            id="terms"
+            name="terms"
+            className="textarea textarea--mono"
+            rows={3}
+            value={values.terms}
+            onChange={handleChange}
+            required
+          />
+        </FormField>
 
-        <div className="form-actions">
-          <button type="submit" className="btn btn--accent" disabled={saving}>
-            {saving ? 'Salvando…' : 'Salvar regra'}
-          </button>
-          <Link to="/rules" className="btn btn--ghost">
-            Cancelar
-          </Link>
-        </div>
+        <fieldset className="fieldset form-grid__full">
+          <legend className="fieldset__legend">Mercados aplicáveis</legend>
+          <div className="chips">
+            {markets.map((market) => (
+              <label key={market.id} className="chip">
+                <input
+                  type="checkbox"
+                  className="visually-hidden"
+                  checked={values.marketIds.includes(market.id)}
+                  onChange={() => toggleMarket(market.id)}
+                />
+                {market.name}
+                <code>{market.code}</code>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <FormField id="startDate" label="Início da vigência">
+          <input
+            id="startDate"
+            name="startDate"
+            type="date"
+            className="input"
+            value={values.startDate}
+            onChange={handleChange}
+            required
+          />
+        </FormField>
+
+        <FormField id="endDate" label="Fim da vigência" hint="Opcional. Deixe vazio se não há prazo final.">
+          <input
+            id="endDate"
+            name="endDate"
+            type="date"
+            className="input"
+            value={values.endDate}
+            onChange={handleChange}
+          />
+        </FormField>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="btn" disabled={saving}>
+          {saving ? 'Salvando…' : 'Salvar regra'}
+        </button>
+        <Link to="/rules" className="link-action">
+          Cancelar
+        </Link>
       </div>
     </form>
   )
