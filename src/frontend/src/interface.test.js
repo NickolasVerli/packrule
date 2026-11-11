@@ -113,6 +113,18 @@ test('cabeçalho permite abrir o guia e indica quando ele está ativo', async ()
   assert.ok(html.includes('Nova análise'))
 })
 
+test('painel oferece orientação e atalhos enquanto os dados carregam', async () => {
+  const { Painel } = await servidor.ssrLoadModule('/src/paginas/Painel.jsx')
+  globalThis.renderizacaoPackrule = { capturando: true, dados: null, carregadores: [] }
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(Painel)))
+  assert.ok(html.includes('Conheça cada área'))
+  assert.ok(html.indexOf('role="status"') < html.indexOf('Conheça cada área'))
+  const orientacoes = html.slice(html.indexOf('Conheça cada área'))
+  for (const endereco of ['/how-to-use', '/products', '/rules', '/analyses/new', '/analyses']) {
+    assert.ok(orientacoes.includes(`href="${endereco}"`))
+  }
+})
+
 for (const [pagina, rota, endereco, esperado] of [
   ['Painel', '/', '/', 'Resumo das análises'],
   ['ComoUsar', '/how-to-use', '/how-to-use', 'Da embalagem ao resultado'],

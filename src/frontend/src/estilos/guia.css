@@ -67,9 +67,60 @@
   color: var(--texto-suave);
 }
 
+.guia-secoes {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--borda);
+}
+
+.guia-secoes h2 {
+  font-size: 1.5rem;
+}
+
+.guia-secoes__lista {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.guia-secoes__link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 0;
+  text-decoration: none;
+}
+
+.guia-secoes__titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.guia-secoes__descricao {
+  max-width: 29ch;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.guia-secoes__link:hover .guia-secoes__titulo {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 @media (max-width: 900px) {
   .guia__conteudo {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
+  }
+
+  .guia-secoes__lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 32px;
   }
 }

@@ -49,3 +49,26 @@ export const RESULTADOS_GUIA = [
     descricao: 'A condição desta regra foi atendida com o texto analisado.',
   },
 ]
+
+export const SECOES_PACKRULE = [
+  {
+    titulo: 'Produtos',
+    descricao: 'Cadastre itens e organize suas versões de embalagem.',
+    destino: '/products',
+  },
+  {
+    titulo: 'Regras',
+    descricao: 'Defina o que será verificado em cada mercado.',
+    destino: '/rules',
+  },
+  {
+    titulo: 'Nova análise',
+    descricao: 'Verifique uma embalagem para os destinos escolhidos.',
+    destino: '/analyses/new',
+  },
+  {
+    titulo: 'Histórico',
+    descricao: 'Reveja os resultados das análises já realizadas.',
+    destino: '/analyses',
+  },
+]

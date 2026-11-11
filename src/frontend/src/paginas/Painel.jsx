@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Conteudo } from '../componentes/Elementos.jsx'
 import { BarraCores, ResumoAnalise } from '../componentes/Indicadores.jsx'
 import { Icone } from '../componentes/Icone.jsx'
+import { GuiaSecoes } from '../componentes/GuiaSecoes.jsx'
 import { useDados, useTitulo } from '../hooks.js'
 import { analises, mercados, produtos, regras } from '../dados.js'
 import { regraVigente } from '../verificacao.js'
@@ -139,6 +140,7 @@ export function Painel() {
           </div>
         )}
       </Conteudo>
+      <GuiaSecoes />
     </div>
   )
 }
