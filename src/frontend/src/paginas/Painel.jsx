@@ -24,6 +24,8 @@ export function Painel() {
   })
 
   const achados = dados ? dados.analises.flatMap((analise) => analise.findings) : []
+  const hoje = dataAtual()
+  const regrasVigentes = dados?.regras.filter((regra) => regraVigente(regra, hoje)) ?? []
 
   return (
     <div className="pagina">
@@ -57,18 +59,29 @@ export function Painel() {
         />
       </section>
 
+      {dados && (
+        <VisaoGeral
+          quantidadeProdutos={Object.keys(dados.produtos).length}
+          quantidadeRegras={regrasVigentes.length}
+          quantidadeMercados={dados.mercados.length}
+        />
+      )}
+
       <Conteudo carregando={carregando} erro={erro}>
         {dados && (
           <div className="duas-colunas">
             <section className="secao" aria-labelledby="recent-title">
               <div className="secao__cabecalho">
-                <h2 id="recent-title">Análises recentes</h2>
+                <div className="secao__texto">
+                  <h2 id="recent-title">Análises recentes</h2>
+                  <p className="secao__descricao">Retome as últimas verificações e veja o que precisa de atenção.</p>
+                </div>
                 <Link to="/analyses" className="link-seta">
                   Histórico <Icone nome="arrow" tamanho={16} />
                 </Link>
               </div>
               {dados.analises.length === 0 ? (
-                <p className="destaque__vazio">Nenhuma análise executada ainda.</p>
+                <p className="destaque__vazio">Nenhuma análise executada ainda. Comece cadastrando um produto e enviando sua embalagem.</p>
               ) : (
                 <ul className="registros">
                   {dados.analises.slice(0, 5).map((analise) => (
@@ -94,15 +107,18 @@ export function Painel() {
 
             <section className="secao" aria-labelledby="markets-title">
               <div className="secao__cabecalho">
-                <h2 id="markets-title">Mercados cobertos</h2>
+                <div className="secao__texto">
+                  <h2 id="markets-title">Mercados disponíveis</h2>
+                  <p className="secao__descricao">Confira as regras vigentes cadastradas para cada destino.</p>
+                </div>
                 <Link to="/rules" className="link-seta">
                   Regras <Icone nome="arrow" tamanho={16} />
                 </Link>
               </div>
               <ul className="registros">
                 {dados.mercados.map((mercado) => {
-                  const vigentes = dados.regras.filter(
-                    (regra) => regra.marketIds.includes(mercado.id) && regraVigente(regra, dataAtual()),
+                  const vigentes = regrasVigentes.filter(
+                    (regra) => regra.marketIds.includes(mercado.id),
                   ).length
                   return (
                     <li key={mercado.id}>
@@ -124,5 +140,26 @@ export function Painel() {
         )}
       </Conteudo>
     </div>
+  )
+}
+
+function VisaoGeral({ quantidadeProdutos, quantidadeRegras, quantidadeMercados }) {
+  const indicadores = [
+    { rotulo: 'Produtos cadastrados', quantidade: quantidadeProdutos },
+    { rotulo: 'Regras vigentes', quantidade: quantidadeRegras },
+    { rotulo: 'Mercados disponíveis', quantidade: quantidadeMercados },
+  ]
+
+  return (
+    <section className="panorama" aria-label="Visão geral dos cadastros">
+      <dl className="panorama__itens">
+        {indicadores.map((indicador) => (
+          <div key={indicador.rotulo} className="panorama__item">
+            <dt>{indicador.rotulo}</dt>
+            <dd>{indicador.quantidade.toLocaleString('pt-BR')}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   )
 }
