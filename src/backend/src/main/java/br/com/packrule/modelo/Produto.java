@@ -1,12 +1,16 @@
 package br.com.packrule.modelo;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "produto")
@@ -33,6 +37,9 @@ public class Produto {
 
     @Column(name = "proxima_versao", nullable = false)
     private int proximaVersao = 1;
+
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VersaoEmbalagem> versoes = new ArrayList<>();
 
     protected Produto() {
     }

@@ -39,7 +39,8 @@ public class ProdutoServico {
 
     @Transactional
     public ProdutoResposta atualizar(UUID id, DadosProduto dados) {
-        Produto produto = obter(id);
+        Produto produto = produtos.buscarParaAtualizacao(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Produto não encontrado."));
         produto.atualizar(dados.nome(), dados.categoria(), dados.descricao(), dados.sku(), dados.status());
         return ProdutoResposta.de(produto);
     }

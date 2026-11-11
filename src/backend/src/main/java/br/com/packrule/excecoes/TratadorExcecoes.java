@@ -57,6 +57,11 @@ public class TratadorExcecoes {
         return responder(HttpStatus.PAYLOAD_TOO_LARGE, "O arquivo excede o limite de 10 MB.", Map.of());
     }
 
+    @ExceptionHandler(ArquivoMuitoGrandeException.class)
+    ResponseEntity<ErroResposta> tratarArquivoGrande(ArquivoMuitoGrandeException erro) {
+        return responder(HttpStatus.PAYLOAD_TOO_LARGE, erro.getMessage(), Map.of());
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     ResponseEntity<ErroResposta> tratarConflito(DataIntegrityViolationException erro) {
         return responder(HttpStatus.CONFLICT,

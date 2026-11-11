@@ -12,7 +12,7 @@ Implementar os requisitos R01–R09 e RN01–RN12 da primeira entrega do PackRul
 - Rotas em português; propriedades JSON em inglês preservam o contrato das telas existentes.
 - `Produto` compõe versões de embalagem; análises compõem achados. Arquivos são armazenados no PostgreSQL, com exclusão transacional e integridade referencial.
 - Dados cadastrais de regras ficam na entidade `Regra`. A classe abstrata `RegraRegulatoria` e suas subclasses implementam a avaliação por polimorfismo, permitindo alterar o tipo de uma regra sem manipular discriminadores do Hibernate.
-- PDFBox extrai texto de PDFs. Tesseract é opcional para imagens e PDFs digitalizados; ausência ou insuficiência de OCR exige revisão do texto, explicitamente informada na resposta.
+- PDFBox extrai texto de PDFs. Tesseract é opcional para imagens; PDFs digitalizados sem texto e ausência ou insuficiência de OCR exigem revisão do texto, explicitamente informada na resposta.
 - Achados preservam título, fonte e evidência da regra no momento da análise. A exclusão de regras é lógica para manter sua rastreabilidade.
 - Sem autenticação no escopo da primeira entrega. O servidor de desenvolvimento escuta somente em localhost.
 - Branch atual `main`, conforme pedido. Três commits locais em inglês, sem prefixos e sem push.
@@ -28,11 +28,11 @@ Implementar os requisitos R01–R09 e RN01–RN12 da primeira entrega do PackRul
 
 ### 2. Embalagens, regras e análises
 
-- [ ] Testar upload real, numeração de versões, extração de PDF, revisão e download de arquivos.
-- [ ] Implementar CRUD de regras e avaliação por mercado, categoria e período de vigência.
-- [ ] Testar Critical, Warning, Passed e Manual Review, histórico imutável, exclusão e integridade referencial.
-- [ ] Implementar persistência dos arquivos, análises e achados; adicionar OCR opcional e validações de arquivos.
-- [ ] Executar testes e criar commit `Implement packaging uploads and compliance analysis`.
+- [x] Testar upload real, numeração de versões, extração de PDF, revisão e download de arquivos.
+- [x] Implementar CRUD de regras e avaliação por mercado, categoria e período de vigência.
+- [x] Testar Critical, Warning, Passed e Manual Review, histórico imutável, exclusão e integridade referencial.
+- [x] Implementar persistência dos arquivos, análises e achados; adicionar OCR opcional e validações de arquivos.
+- [x] Executar testes e criar commit `Implement packaging uploads and compliance analysis`.
 
 ### 3. Integração e entrega
 
@@ -56,3 +56,5 @@ Implementar os requisitos R01–R09 e RN01–RN12 da primeira entrega do PackRul
 - GitHub CLI está sem autenticação válida; nenhuma issue ou PR será publicada nesta tarefa local.
 - Maven e PostgreSQL não estão instalados como serviços; ferramentas temporárias e banco real de testes serão usados sem instalação global.
 - Etapa 1: três testes falharam inicialmente por ausência dos endpoints (404); após implementação, `src/backend/mvnw.cmd -B -ntp test` passou com 3 testes, zero falhas, PostgreSQL 17.11 e validação do esquema pelo Hibernate. Execução em Java 27; compilação direcionada ao Java 21.
+- Etapa 2: testes do fluxo inicialmente falharam pela ausência das rotas; a primeira execução completa passou com 12 testes e zero falhas. Inclui arquivos persistidos, exclusão em cascata, histórico preservado e dois uploads simultâneos com números distintos.
+- Etapa 2 concluída: `src/backend/mvnw.cmd -B -ntp test` passou com 16 testes e zero falhas, incluindo quatro testes diretos da classe abstrata e suas subclasses. Tesseract não está instalado neste ambiente; o estado de revisão necessária sem OCR foi verificado.
