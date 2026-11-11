@@ -63,6 +63,10 @@
   display: none;
 }
 
+.menu-ajuda {
+  display: none;
+}
+
 .conteudo {
   padding: 56px 0 112px;
 }
@@ -179,6 +183,21 @@
   gap: 12px;
 }
 
+@media (min-width: 761px) and (max-width: 1000px) {
+  .barra-topo__conteudo {
+    gap: 24px;
+  }
+
+  .menu-principal {
+    gap: 20px;
+  }
+
+  .menu-principal a {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 900px) {
   .divisao,
   .duas-colunas {
@@ -195,11 +214,31 @@
 @media (max-width: 760px) {
   .barra-topo__conteudo {
     justify-content: space-between;
+    gap: 16px;
     height: 58px;
   }
 
   .menu-principal {
     display: none;
+  }
+
+  .barra-topo__conteudo > .barra-topo__analise {
+    display: none;
+  }
+
+  .menu-ajuda {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .menu-ajuda:hover,
+  .menu-ajuda.ativo {
+    text-decoration: underline;
+    text-underline-offset: 5px;
   }
 
   .conteudo {

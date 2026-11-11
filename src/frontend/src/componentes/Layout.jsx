@@ -7,6 +7,7 @@ const NAVEGACAO = [
   { to: '/products', label: 'Produtos', icon: 'box' },
   { to: '/rules', label: 'Regras', icon: 'rules' },
   { to: '/analyses', label: 'Histórico', icon: 'history', end: true },
+  { to: '/how-to-use', label: 'Como usar' },
 ]
 
 const NAVEGACAO_CELULAR = [
@@ -36,7 +37,11 @@ export function Layout() {
             ))}
           </nav>
 
-          <Link to="/analyses/new" className="botao botao--pequeno">
+          <NavLink to="/how-to-use" className={(estado) => `menu-ajuda ${classeLink(estado)}`}>
+            Como usar
+          </NavLink>
+
+          <Link to="/analyses/new" className="botao botao--pequeno barra-topo__analise">
             Nova análise
           </Link>
         </div>

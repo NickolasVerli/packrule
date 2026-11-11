@@ -1,0 +1,75 @@
+.guia__conteudo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 64px;
+  align-items: start;
+}
+
+.guia__etapas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guia__etapa {
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 8px 16px;
+  padding: 24px 0;
+}
+
+.guia__etapa .etapa__conteudo {
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.guia__etapa .etapa__titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 1.65rem;
+  line-height: 1.05;
+}
+
+.guia__etapa .link-seta {
+  min-height: 44px;
+}
+
+.guia__resultados {
+  padding: 24px;
+  border-top: 2px solid var(--texto);
+  background: var(--preenchimento);
+}
+
+.guia__legenda {
+  margin: 8px 0 0;
+}
+
+.guia__legenda > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.guia__legenda > div:last-child {
+  border-bottom: 0;
+}
+
+.guia__legenda dd {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.guia__nota {
+  padding-top: 16px;
+  border-top: 1px solid var(--borda);
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+}
+
+@media (max-width: 900px) {
+  .guia__conteudo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}

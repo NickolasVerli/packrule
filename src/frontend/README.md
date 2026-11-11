@@ -57,6 +57,7 @@ A decisão de conformidade é executada no servidor. Os filtros no cliente serve
 | Rota | Tela | Requisito |
 | :--- | :--- | :--- |
 | `/` | Painel | R08, R09 |
+| `/how-to-use` | Guia de uso e interpretação dos resultados | |
 | `/products` | Produtos | R01 |
 | `/products/new`, `/products/:id/edit` | Cadastro e edição | R01 |
 | `/products/:id` | Produto, versões e análises | R02, R09 |

@@ -105,8 +105,17 @@ test('resultados mostram rótulos em português sem mudar os códigos de classif
   }
 })
 
+test('cabeçalho permite abrir o guia e indica quando ele está ativo', async () => {
+  const { Layout } = await servidor.ssrLoadModule('/src/componentes/Layout.jsx')
+  const html = renderToStaticMarkup(createElement(MemoryRouter,
+    { initialEntries: ['/how-to-use'] }, createElement(Layout)))
+  assert.match(html, /<a[^>]*aria-current="page"[^>]*href="\/how-to-use"[^>]*>Como usar<\/a>/)
+  assert.ok(html.includes('Nova análise'))
+})
+
 for (const [pagina, rota, endereco, esperado] of [
   ['Painel', '/', '/', 'Resumo das análises'],
+  ['ComoUsar', '/how-to-use', '/how-to-use', 'Da embalagem ao resultado'],
   ['Produtos', '/products', '/products', 'Shampoo Hidratação Profunda'],
   ['CadastroProduto', '/products/new', '/products/new', 'Salvar produto'],
   ['CadastroProduto', '/products/:id/edit', '/products/product-shampoo/edit', 'Shampoo Hidratação Profunda'],

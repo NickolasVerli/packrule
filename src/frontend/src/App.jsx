@@ -13,6 +13,7 @@ import { CadastroProduto } from './paginas/CadastroProduto.jsx'
 import { Produtos } from './paginas/Produtos.jsx'
 import { CadastroRegra } from './paginas/CadastroRegra.jsx'
 import { Regras } from './paginas/Regras.jsx'
+import { ComoUsar } from './paginas/ComoUsar.jsx'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Painel />} />
+            <Route path="how-to-use" element={<ComoUsar />} />
             <Route path="products" element={<Produtos />} />
             <Route path="products/new" element={<CadastroProduto />} />
             <Route path="products/:id" element={<DetalhesProduto />} />
