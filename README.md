@@ -37,6 +37,14 @@ Cadastre um produto, uma regra e uma versão de embalagem; selecione os mercados
 
 Para usar PostgreSQL instalado ou Docker, configurar OCR, consultar endpoints e entender os critérios da AEP, veja [o README do backend](src/backend/README.md). A organização das telas está no [README do frontend](src/frontend/README.md).
 
+Para ativar a leitura automática de imagens PNG e JPG, execute uma vez na raiz e reinicie o backend:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/configurar-ocr.ps1
+```
+
+O comando instala o Tesseract 5.5.3 para o usuário atual, baixa os cinco idiomas dos mercados suportados e configura o `.env`, preservando as demais configurações existentes. Requer internet e o `winget` do Windows. O reconhecimento funciona localmente, sem API key ou assinatura. PDFs com texto são lidos sem Tesseract; PDFs escaneados continuam exigindo texto revisado manualmente.
+
 ## Verificação
 
 ```powershell

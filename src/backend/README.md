@@ -134,11 +134,21 @@ Respostas: `201` para criação, `200` para consulta/alteração, `204` para exc
 
 Arquivos aceitos: PDF, PNG e JPG, até 10 MB. A extensão, o tipo e o conteúdo são verificados. PDFs devem estar sem senha e ter até 20 páginas; imagens podem ter até 25 milhões de pixels. O texto revisado tem limite de 50000 caracteres.
 
-PDFs com texto são lidos com PDFBox. PDFs digitalizados sem texto exigem preenchimento manual. Para OCR em imagens, instale Tesseract e os idiomas desejados e configure no `.env`:
+PDFs com texto são lidos com PDFBox. PDFs digitalizados sem texto exigem preenchimento manual. O OCR de imagens usa o Tesseract localmente, sem API key, conta ou serviço pago.
+
+No Windows, execute uma vez a partir da raiz do repositório:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/configurar-ocr.ps1
+```
+
+O script instala o Tesseract 5.5.3 pelo `winget` para o usuário atual, quando não encontra uma instalação existente. Depois baixa os modelos oficiais para português, inglês, alemão, espanhol e francês e grava somente `OCR_COMANDO` e `OCR_IDIOMAS` no `.env`, preservando as demais configurações. O primeiro uso precisa de internet; a leitura das imagens é local. Reinicie o backend após executar.
+
+Para configurar manualmente, instale Tesseract e os idiomas desejados e ajuste o `.env`:
 
 ```properties
 OCR_COMANDO=C:/Program Files/Tesseract-OCR/tesseract.exe
-OCR_IDIOMAS=eng+fra+deu+spa
+OCR_IDIOMAS=por+eng+deu+spa+fra
 ```
 
 Sem OCR, ou quando sua execução falha, a API retorna `extractionStatus=REVISAO_NECESSARIA` e uma mensagem explicando a necessidade de revisão. O arquivo permanece armazenado e pode receber texto manualmente. Nenhuma leitura incerta é apresentada como sucesso silencioso.
@@ -152,6 +162,14 @@ A regra de presença exige um dos termos; a de idioma exige dois termos distinto
 ```
 
 Os testes iniciam PostgreSQL real em uma porta temporária e validam o esquema SQL com as entidades JPA. Cobrem CRUD, erros, multipart, PDF, download, versões concorrentes, polimorfismo, vigência, histórico, exclusões e persistência após reiniciar a aplicação. Não dependem do banco local nem de Docker.
+
+Após configurar o Tesseract, inclua os testes reais de OCR de PNG e JPG:
+
+```powershell
+.\mvnw.cmd "-Dpackrule.testar-ocr=true" verify
+```
+
+Esses testes enviam imagens com texto em português pela API e conferem o texto extraído no PostgreSQL e o download do arquivo original. Sem a opção, apenas a integração com o executável externo é ignorada, permitindo executar os demais testes em ambientes sem Tesseract.
 
 O JAR fica em `target/packrule-1.0.0-SNAPSHOT.jar` e usa o PostgreSQL configurado no ambiente:
 
