@@ -105,8 +105,12 @@ public class LeituraEmbalagemServico {
                 leitor.setInput(entrada);
                 String formato = leitor.getFormatName().toLowerCase(Locale.ROOT);
                 boolean formatoCorreto = extensao.equals("png") ? formato.equals("png") : formato.equals("jpeg");
-                if (!formatoCorreto || (long) leitor.getWidth(0) * leitor.getHeight(0) > 25000000) {
+                long quantidadePixels = (long) leitor.getWidth(0) * leitor.getHeight(0);
+                if (!formatoCorreto || quantidadePixels <= 0 || quantidadePixels > 25000000) {
                     throw new DadosInvalidosException("Envie uma imagem PNG ou JPG válida com até 25 milhões de pixels.");
+                }
+                if (leitor.read(0) == null) {
+                    throw new DadosInvalidosException("Não foi possível decodificar a imagem enviada.");
                 }
             } finally {
                 leitor.dispose();

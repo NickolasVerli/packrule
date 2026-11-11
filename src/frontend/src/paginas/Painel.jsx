@@ -76,7 +76,7 @@ export function Painel() {
                       <Link to={`/analyses/${analise.id}`} className="registro registro--link">
                         <div>
                           <p className="registro__titulo">
-                            {dados.produtos[analise.productId]?.name ?? 'Produto removido'}
+                            {analise.productName ?? dados.produtos[analise.productId]?.name ?? 'Produto removido'}
                           </p>
                           <p className="registro__detalhes">{formatarDataHora(analise.createdAt)}</p>
                         </div>

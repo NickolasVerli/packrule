@@ -27,6 +27,9 @@ export function DetalhesEmbalagem() {
               descricao={dados.versao.fileName}
               acoes={
                 <>
+                  <a href={embalagens.enderecoArquivo(dados.versao.id)} className="acao">
+                    Baixar arquivo
+                  </a>
                   <Link to={`/products/${dados.produto.id}`} className="acao">
                     Voltar ao produto
                   </Link>
@@ -91,7 +94,7 @@ function RevisaoTexto({ versao }) {
       {erroFormulario && <Alerta tom="error">{erroFormulario}</Alerta>}
       {!texto.trim() && (
         <Alerta tom="warning">
-          Sem texto, todas as regras desta versão terminam em Revisão manual.
+          {versao.extractionMessage ?? 'Sem texto, todas as regras desta versão terminam em Revisão manual.'}
         </Alerta>
       )}
       <Campo

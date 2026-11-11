@@ -60,7 +60,7 @@ function Resultado({ analise, produto, versao, mercados: listaMercados, regras: 
     <>
       <Cabecalho
         sobretitulo={`Análise · ${formatarDataHora(analise.createdAt)}`}
-        titulo={produto?.name ?? 'Produto removido'}
+        titulo={analise.productName ?? produto?.name ?? 'Produto removido'}
         descricao={`Versão v${versao?.number ?? '?'} · referência em ${formatarData(analise.referenceDate)}`}
         acoes={
           <>
@@ -129,9 +129,11 @@ function Resultado({ analise, produto, versao, mercados: listaMercados, regras: 
                       <li key={achado.id} className="achado">
                         <SeloClassificacao classificacao={achado.classification} />
                         <div className="achado__conteudo">
-                          <h3>{regra?.title ?? 'Regra removida'}</h3>
+                          <h3>{achado.ruleTitle ?? regra?.title ?? 'Regra removida'}</h3>
                           <p className="suave">{achado.explanation}</p>
-                          {regra && <p className="achado__fonte">{regra.source}</p>}
+                          {(achado.source ?? regra?.source) && (
+                            <p className="achado__fonte">{achado.source ?? regra.source}</p>
+                          )}
                         </div>
                       </li>
                     )

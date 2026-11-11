@@ -36,11 +36,11 @@ Implementar os requisitos R01–R09 e RN01–RN12 da primeira entrega do PackRul
 
 ### 3. Integração e entrega
 
-- [ ] Substituir a persistência local das telas por chamadas HTTP e remover a decisão de conformidade do cliente.
-- [ ] Testar o adaptador HTTP e as telas; executar lint e build do frontend.
-- [ ] Documentar ambiente, endpoints, execução e correspondência com os critérios da AEP.
-- [ ] Executar o backend e demonstrar persistência após reinício, além do fluxo produto → arquivo → análise → histórico → exclusão.
-- [ ] Revisar o diff completo e criar commit `Connect the frontend to the API and document backend setup`.
+- [x] Substituir a persistência local das telas por chamadas HTTP e remover a decisão de conformidade do cliente.
+- [x] Testar o adaptador HTTP e as telas; executar lint e build do frontend.
+- [x] Documentar ambiente, endpoints, execução e correspondência com os critérios da AEP.
+- [x] Executar o backend e demonstrar persistência após reinício, além do fluxo produto → arquivo → análise → histórico → exclusão.
+- [x] Revisar o diff completo e criar commit `Connect the frontend to the API and document backend setup`.
 
 ## Casos que exigem atenção
 
@@ -58,3 +58,11 @@ Implementar os requisitos R01–R09 e RN01–RN12 da primeira entrega do PackRul
 - Etapa 1: três testes falharam inicialmente por ausência dos endpoints (404); após implementação, `src/backend/mvnw.cmd -B -ntp test` passou com 3 testes, zero falhas, PostgreSQL 17.11 e validação do esquema pelo Hibernate. Execução em Java 27; compilação direcionada ao Java 21.
 - Etapa 2: testes do fluxo inicialmente falharam pela ausência das rotas; a primeira execução completa passou com 12 testes e zero falhas. Inclui arquivos persistidos, exclusão em cascata, histórico preservado e dois uploads simultâneos com números distintos.
 - Etapa 2 concluída: `src/backend/mvnw.cmd -B -ntp test` passou com 16 testes e zero falhas, incluindo quatro testes diretos da classe abstrata e suas subclasses. Tesseract não está instalado neste ambiente; o estado de revisão necessária sem OCR foi verificado.
+- Etapa 3: 12 testes do adaptador HTTP passaram após substituir o localStorage. A primeira verificação completa do frontend passou com 30 testes, lint e build.
+- O modo local usa `-Plocal spring-boot:test-run`, que inclui o código de desenvolvimento e mantém PostgreSQL em disco. O JAR normal usa apenas os fontes de produção.
+- Verificação por HTTP real passou: CRUD, multipart, extração de PDF, download idêntico por SHA-256, Passed/Manual Review, snapshots e exclusão em cascata. O proxy Vite respondeu com os dados reais da API.
+- A verificação inicial com `verify` passou com 17 testes e gerou o JAR, incluindo o teste de conservação do produto após encerrar e reiniciar o contexto Spring.
+- Revisão independente encontrou uma validação incompleta de imagem: PNG truncado foi aceito com 201. O teste de regressão reproduziu essa falha antes de adicionar a decodificação dos pixels. A revisão também identificou nomes históricos inconsistentes no painel e no histórico, cobertos por testes de interface que falharam antes da correção.
+- A automação visual não pôde ser executada: os provedores de navegador e de aplicativos nativos estão indisponíveis. A renderização das telas foi verificada nos testes; o caminho frontend → API → PostgreSQL foi verificado por HTTP.
+- Verificação final após as correções: `src/backend/mvnw.cmd -B -ntp verify` passou com 18 testes, zero falhas e JAR gerado. `npm test` passou com 32 testes; `npm run lint` e `npm run build` passaram. Os dois achados da revisão foram corrigidos e cobertos por regressões.
+- Mantida a branch `main`, conforme solicitação. Trabalho organizado em três commits locais, sem push, sem publicação e sem alterações de identidade Git.

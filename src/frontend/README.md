@@ -1,77 +1,70 @@
 # PackRule · Frontend
 
-Interface web do PackRule, feita com **React 19** e **Vite**.
+Interface React 19 com Vite, conectada ao backend Java por API REST. Produtos, arquivos, regras e análises são armazenados no PostgreSQL pelo servidor.
 
-## Requisitos
+## Executar
 
-- Node.js 20 ou superior
-- npm 10 ou superior
+Requisitos: Node.js 22.12 ou superior e npm. Primeiro, inicie o backend conforme [seu README](../backend/README.md).
 
-## Como executar
+Dentro de `src/frontend`:
 
-```bash
-cd src/frontend
-npm install
+```powershell
+npm ci
 npm run dev
 ```
 
-A aplicação abre em `http://localhost:5173`.
+Acesse `http://localhost:5173`. O Vite encaminha `/api` para `http://127.0.0.1:8080`. Para outro endereço de API, copie `.env.example` para `.env` nesta pasta e configure `VITE_API_URL`. Origens diferentes precisam estar autorizadas em `FRONTEND_ORIGENS` no backend.
 
-Outros comandos:
+```powershell
+npm test
+npm run lint
+npm run build
+npm run preview
+```
 
-| Comando           | Função                          |
-| :---------------- | :------------------------------ |
-| `npm run build`   | Gera a versão de produção       |
-| `npm run preview` | Serve a versão de produção      |
-| `npm run lint`    | Executa o oxlint                |
+O preview também encaminha `/api` ao backend local. Na hospedagem do build, configure um proxy para `/api` ou defina `VITE_API_URL` antes de compilar.
 
 ## Organização
 
-```
+```text
 src/
-├── components/   componentes reutilizáveis (layout, formulários, badges)
-├── context/      contexto de avisos (toasts)
-├── hooks/        useAsync e useDocumentTitle
-├── pages/        telas, agrupadas por módulo
-│   ├── products/ produtos e versões de embalagem
-│   ├── rules/    regras de conformidade
-│   └── analyses/ nova análise, resultado e histórico
-├── services/     camada de acesso a dados e motor de verificação
-├── styles/       tokens, layout, componentes e páginas
-└── utils/        constantes e formatadores
+├── componentes/    elementos, layout e avisos
+├── estilos/        estilos e tokens visuais
+├── paginas/        telas de produtos, embalagens, regras e análises
+├── servicos/       cliente HTTP, erros e paginação
+├── dados.js        operações dos módulos da API
+├── verificacao.js  filtros visuais de categoria e vigência
+├── config.js       classificações, categorias e formatos
+├── hooks.js        carregamento e título de página
+└── utils.js        formatadores
 ```
 
-## Dados e integração com o backend
+`dadosIniciais.js` é usado apenas como fixture dos testes de interface. Não popula a aplicação. Os registros antigos do navegador não são apagados nem migrados automaticamente; a aplicação passa a consultar o PostgreSQL.
 
-O backend (Java, Spring Boot e PostgreSQL) ainda não existe nesta etapa. Por isso a camada
-`src/services` expõe uma API assíncrona por módulo (`productService`, `packagingService`,
-`ruleService`, `marketService` e `analysisService`) e persiste os dados no `localStorage` do
-navegador, com dados iniciais em `services/seed.js`.
+## Fluxo
 
-Quando a API REST estiver pronta, apenas os arquivos de `src/services` precisam ser trocados por
-chamadas HTTP. As páginas continuam as mesmas.
+1. Cadastre um produto com nome, categoria e descrição.
+2. Cadastre as regras desejadas, com fonte, termos, mercados e vigência.
+3. Envie uma versão de embalagem em PDF, PNG ou JPG.
+4. Revise o texto extraído; o arquivo original pode ser baixado na tela da versão.
+5. Selecione embalagem, mercados e data para executar a análise.
+6. Consulte resultados e histórico. O título e a fonte originais de cada achado são preservados.
 
-`complianceEngine.js` reproduz no cliente a seleção de regras por mercado, categoria e vigência
-descrita na documentação, para que o fluxo completo possa ser demonstrado. No sistema final, essa
-decisão pertence ao Compliance Engine do backend.
+A decisão de conformidade é executada no servidor. Os filtros no cliente servem à apresentação e à estimativa de regras na tela. Falhas da API são exibidas ao usuário; não há retorno silencioso a dados locais.
 
 ## Telas
 
-| Rota                              | Tela                               | Requisito |
-| :-------------------------------- | :--------------------------------- | :-------- |
-| `/`                               | Painel                             |           |
-| `/products`                       | Lista de produtos                  | R01       |
-| `/products/new`, `/products/:id/edit` | Cadastro e edição de produto   | R01       |
-| `/products/:id`                   | Detalhe, versões e análises        | R02, R09  |
-| `/products/:id/versions/new`      | Envio de embalagem                 | R02, R03  |
-| `/versions/:id`                   | Revisão do texto extraído          | R04       |
-| `/rules`, `/rules/new`, `/rules/:id/edit` | CRUD de regras             | R06       |
-| `/analyses/new`                   | Nova análise                       | R05, R07  |
-| `/analyses/:id`                   | Resultado da análise               | R08       |
-| `/analyses`                       | Histórico de análises              | R09       |
+| Rota | Tela | Requisito |
+| :--- | :--- | :--- |
+| `/` | Painel | R08, R09 |
+| `/products` | Produtos | R01 |
+| `/products/new`, `/products/:id/edit` | Cadastro e edição | R01 |
+| `/products/:id` | Produto, versões e análises | R02, R09 |
+| `/products/:id/versions/new` | Upload de embalagem | R02, R03 |
+| `/versions/:id` | Download e revisão do texto | R03, R04 |
+| `/rules`, `/rules/new`, `/rules/:id/edit` | CRUD de regras | R06 |
+| `/analyses/new` | Nova análise | R05, R07 |
+| `/analyses/:id` | Resultados | R08 |
+| `/analyses` | Histórico | R09 |
 
-## Limitações desta etapa
-
-- O texto da embalagem é informado manualmente. O OCR (R04) será integrado ao backend.
-- O arquivo enviado tem apenas os metadados registrados. O armazenamento do arquivo ficará a
-  cargo do backend.
+PDFs com texto são extraídos automaticamente. Imagens dependem de Tesseract configurado no backend; PDFs digitalizados sem texto exigem revisão manual. A tela informa quando não há texto suficiente para análise.

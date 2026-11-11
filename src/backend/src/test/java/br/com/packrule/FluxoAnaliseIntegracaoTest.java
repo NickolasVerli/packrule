@@ -15,9 +15,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.ByteArrayOutputStream;
-import java.util.Base64;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -103,14 +105,29 @@ class FluxoAnaliseIntegracaoTest extends BancoIntegracao {
 
     @Test
     void indicaRevisaoManualParaImagemSemOcr() throws Exception {
-        byte[] imagem = Base64.getDecoder().decode(
-                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jogAAAABJRU5ErkJggg==");
+        byte[] imagem = criarImagem("png");
         cliente.perform(multipart("/api/produtos/{id}/embalagens", criarProduto())
                         .file(new MockMultipartFile("arquivo", "rotulo.png", "image/png", imagem)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.extractedText").value(""))
                 .andExpect(jsonPath("$.extractionStatus").value("REVISAO_NECESSARIA"))
                 .andExpect(jsonPath("$.extractionMessage").isNotEmpty());
+    }
+
+    @Test
+    void rejeitaImagensTruncadasMesmoComTextoRevisado() throws Exception {
+        String produtoId = criarProduto();
+        for (String formato : new String[] {"png", "jpeg"}) {
+            byte[] truncado = Arrays.copyOf(criarImagem(formato), 33);
+            for (String texto : new String[] {"", "Fabricante PackRule"}) {
+                cliente.perform(multipart("/api/produtos/{id}/embalagens", produtoId)
+                                .file(new MockMultipartFile("arquivo", "rotulo." + formato, "image/" + formato, truncado))
+                                .param("textoExtraido", texto))
+                        .andExpect(status().isBadRequest());
+            }
+        }
+        assertThat(consultas.queryForObject("SELECT count(*) FROM versao_embalagem", Long.class)).isZero();
+        assertThat(consultas.queryForObject("SELECT count(*) FROM arquivo_embalagem", Long.class)).isZero();
     }
 
     @Test
@@ -298,6 +315,14 @@ class FluxoAnaliseIntegracaoTest extends BancoIntegracao {
                 conteudo.endText();
             }
             documento.save(saida);
+            return saida.toByteArray();
+        }
+    }
+
+    private byte[] criarImagem(String formato) throws Exception {
+        try (ByteArrayOutputStream saida = new ByteArrayOutputStream()) {
+            BufferedImage imagem = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
+            assertThat(ImageIO.write(imagem, formato, saida)).isTrue();
             return saida.toByteArray();
         }
     }

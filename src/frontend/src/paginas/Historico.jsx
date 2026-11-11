@@ -69,7 +69,7 @@ export function Historico() {
                 <li key={analise.id} className="registro">
                   <Link to={`/analyses/${analise.id}`} style={{ textDecoration: 'none' }}>
                     <p className="registro__titulo">
-                      {dados.produtos[analise.productId]?.name ?? 'Produto removido'}
+                      {analise.productName ?? dados.produtos[analise.productId]?.name ?? 'Produto removido'}
                     </p>
                     <p className="registro__detalhes">
                       v{dados.versoes[analise.versionId]?.number ?? '?'} ·{' '}

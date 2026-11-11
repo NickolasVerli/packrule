@@ -104,7 +104,7 @@ function FormularioEmbalagem({ produtoId }) {
         <Campo
           id="extractedText"
           rotulo="Texto da embalagem"
-          dica="Cole ou digite os textos impressos. As regras são verificadas sobre este conteúdo, e você pode revisá-lo antes de cada análise."
+          dica="Opcional. O texto de PDFs é extraído no envio. Imagens usam OCR quando configurado. Você poderá revisar o conteúdo antes da análise."
           className="grade-formulario__inteiro"
         >
           <textarea

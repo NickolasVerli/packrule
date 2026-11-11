@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict'
-import { after, before, test } from 'node:test'
+import { after, before, mock, test } from 'node:test'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createServer } from 'vite'
 import react from '@vitejs/plugin-react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { analises } from './dados.js'
+import { MERCADOS_INICIAIS, PRODUTOS_INICIAIS, REGRAS_INICIAIS, EMBALAGENS_INICIAIS } from './dadosIniciais.js'
 
 let servidor
 let elementos
@@ -14,11 +15,35 @@ let Avisos
 let analise
 
 before(async () => {
-  const memoria = new Map()
-  globalThis.localStorage = {
-    getItem: chave => memoria.get(chave) ?? null,
-    setItem: (chave, valor) => memoria.set(chave, valor),
+  analise = {
+    id: 'analise-renderizacao', productId: 'product-shampoo', versionId: 'version-shampoo-1',
+    marketIds: ['market-fr'], referenceDate: '2026-11-11', createdAt: '2026-11-11T12:00:00Z',
+    findings: [{
+      id: 'achado-renderizacao', ruleId: REGRAS_INICIAIS[0].id, marketId: 'market-fr',
+      classification: 'PASSED', explanation: 'Informação encontrada no texto da embalagem.',
+      ruleTitle: REGRAS_INICIAIS[0].title, source: REGRAS_INICIAIS[0].source,
+    }],
   }
+  mock.method(globalThis, 'fetch', async (endereco, opcoes = {}) => {
+    const caminho = new URL(endereco, 'http://localhost').pathname.replace(/^\/api/, '')
+    let resposta
+    if (caminho === '/analises' || caminho.startsWith('/analises/')) {
+      resposta = caminho === '/analises' && opcoes.method !== 'POST' ? [analise] : analise
+    }
+    if (caminho === '/mercados') resposta = MERCADOS_INICIAIS
+    if (caminho === '/produtos') resposta = PRODUTOS_INICIAIS
+    if (caminho.startsWith('/produtos/')) {
+      const produtoId = caminho.split('/')[2]
+      resposta = caminho.endsWith('/embalagens')
+        ? EMBALAGENS_INICIAIS.filter((versao) => versao.productId === produtoId)
+        : PRODUTOS_INICIAIS.find((produto) => produto.id === produtoId)
+    }
+    if (caminho === '/embalagens') resposta = EMBALAGENS_INICIAIS
+    if (caminho.startsWith('/embalagens/')) resposta = EMBALAGENS_INICIAIS.find((versao) => versao.id === caminho.split('/')[2])
+    if (caminho === '/regras') resposta = REGRAS_INICIAIS
+    if (caminho.startsWith('/regras/')) resposta = REGRAS_INICIAIS.find((regra) => regra.id === caminho.split('/')[2])
+    return new Response(JSON.stringify(resposta ?? { mensagem: 'Registro não encontrado.' }), { status: resposta ? 200 : 404 })
+  })
   analise = await analises.executar({
     versionId: 'version-shampoo-1', marketIds: ['market-fr'], referenceDate: '2026-11-11',
   })
@@ -53,6 +78,7 @@ before(async () => {
 
 after(async () => {
   await servidor?.close()
+  mock.restoreAll()
   delete globalThis.renderizacaoPackrule
 })
 
@@ -95,7 +121,7 @@ for (const [pagina, rota, endereco, esperado] of [
   ['ResultadoAnalise', '/analyses/:id', null, 'Identificação do fabricante'],
   ['NaoEncontrada', '*', '/pagina-inexistente', 'Página não encontrada'],
 ]) {
-  test('renderiza ' + pagina + ' com os dados reais da rota ' + rota, async () => {
+  test('renderiza ' + pagina + ' com o contrato da API na rota ' + rota, async () => {
     const modulo = await servidor.ssrLoadModule('/src/paginas/' + pagina + '.jsx')
     const teste = { capturando: true, dados: null, carregadores: [] }
     globalThis.renderizacaoPackrule = teste
@@ -116,5 +142,45 @@ for (const [pagina, rota, endereco, esperado] of [
     assert.ok(html.includes(esperado), pagina + ': conteúdo da página não foi renderizado')
     assert.ok(!html.includes('Manual Review'))
     assert.ok(!html.includes('Compliance Facts'))
+    if (pagina === 'DetalhesEmbalagem') assert.ok(html.includes('/api/embalagens/version-shampoo-1/arquivo'))
+  })
+}
+
+test('resultado preserva o título e a fonte de uma regra excluída', async () => {
+  const modulo = await servidor.ssrLoadModule('/src/paginas/ResultadoAnalise.jsx')
+  const historica = {
+    ...analise,
+    findings: [{ ...analise.findings[0], ruleTitle: 'Título histórico', source: 'Fonte histórica' }],
+  }
+  globalThis.renderizacaoPackrule = {
+    capturando: false,
+    dados: {
+      analise: historica, produto: PRODUTOS_INICIAIS[0], versao: EMBALAGENS_INICIAIS[0],
+      mercados: Object.fromEntries(MERCADOS_INICIAIS.map((mercado) => [mercado.id, mercado])), regras: {},
+    },
+  }
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(modulo.ResultadoAnalise)))
+  assert.ok(html.includes('Título histórico'))
+  assert.ok(html.includes('Fonte histórica'))
+  assert.ok(!html.includes('Regra removida'))
+})
+
+for (const pagina of ['Painel', 'Historico']) {
+  test(pagina + ' preserva o nome do produto registrado na análise', async () => {
+    const modulo = await servidor.ssrLoadModule('/src/paginas/' + pagina + '.jsx')
+    const historica = { ...analise, productName: 'Nome preservado na análise' }
+    globalThis.renderizacaoPackrule = {
+      capturando: false,
+      dados: {
+        produtos: Object.fromEntries(PRODUTOS_INICIAIS.map((produto) => [produto.id, { ...produto, name: 'Nome atual alterado' }])),
+        regras: REGRAS_INICIAIS, analises: [historica],
+        versoes: Object.fromEntries(EMBALAGENS_INICIAIS.map((versao) => [versao.id, versao])),
+        mercados: pagina === 'Painel' ? MERCADOS_INICIAIS
+          : Object.fromEntries(MERCADOS_INICIAIS.map((mercado) => [mercado.id, mercado])),
+      },
+    }
+    const html = renderToStaticMarkup(createElement(MemoryRouter, null,
+      createElement(Avisos, null, createElement(modulo[pagina]))))
+    assert.ok(html.includes('Nome preservado na análise'))
   })
 }
