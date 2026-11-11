@@ -125,6 +125,33 @@ button.resumo__linha[aria-pressed='true'] {
   color: var(--texto-suave);
 }
 
+.painel__resumo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.painel__carregamento {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.painel__aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+
+.painel__aviso p {
+  flex: 1 1 460px;
+}
+
+.painel__aviso .acao {
+  min-height: 44px;
+}
+
 .panorama {
   padding: 24px 0;
   border-top: 2px solid var(--texto);

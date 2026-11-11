@@ -60,7 +60,7 @@ before(async () => {
               export function useDados(carregar) {
                 const teste = globalThis.renderizacaoPackrule
                 if (teste.capturando) teste.carregadores.push(carregar)
-                return { dados: teste.dados, carregando: teste.capturando, erro: null, recarregar() {} }
+                return { dados: teste.dados, carregando: teste.capturando, erro: teste.erro ?? null, recarregar() {} }
               }
             `
           }
@@ -118,11 +118,46 @@ test('painel oferece orientação e atalhos enquanto os dados carregam', async (
   globalThis.renderizacaoPackrule = { capturando: true, dados: null, carregadores: [] }
   const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(Painel)))
   assert.ok(html.includes('Conheça cada área'))
+  assert.ok(html.includes('Produtos cadastrados'))
+  assert.ok(html.includes('Análises recentes'))
+  assert.ok(html.includes('Mercados disponíveis'))
   assert.ok(html.indexOf('role="status"') < html.indexOf('Conheça cada área'))
   const orientacoes = html.slice(html.indexOf('Conheça cada área'))
   for (const endereco of ['/how-to-use', '/products', '/rules', '/analyses/new', '/analyses']) {
     assert.ok(orientacoes.includes(`href="${endereco}"`))
   }
+})
+
+test('painel mantém as seções visíveis com totais zerados quando a API falha', async () => {
+  const { Painel } = await servidor.ssrLoadModule('/src/paginas/Painel.jsx')
+  const erro = 'A API retornou uma resposta inválida. Verifique o backend.'
+  globalThis.renderizacaoPackrule = { capturando: false, dados: null, erro, carregadores: [] }
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(Painel)))
+  assert.ok(html.includes(erro))
+  assert.ok(html.includes('Tentar novamente'))
+  assert.match(html, /<dt>Produtos cadastrados<\/dt><dd>0<\/dd>/)
+  assert.match(html, /<dt>Regras vigentes<\/dt><dd>0<\/dd>/)
+  assert.match(html, /<dt>Mercados disponíveis<\/dt><dd>4<\/dd>/)
+  for (const nome of ['Análises recentes', 'Alemanha', 'Brasil', 'Espanha', 'França', 'Conheça cada área']) {
+    assert.ok(html.includes(nome))
+  }
+  assert.equal((html.match(/0 regras vigentes/g) ?? []).length, 4)
+  assert.ok(!html.includes('Carregando…'))
+  assert.ok(!html.includes('Nenhuma análise executada ainda.'))
+})
+
+test('painel distingue cadastros vazios de uma falha de conexão', async () => {
+  const { Painel } = await servidor.ssrLoadModule('/src/paginas/Painel.jsx')
+  globalThis.renderizacaoPackrule = {
+    capturando: false,
+    dados: { produtos: {}, regras: [], analises: [], mercados: MERCADOS_INICIAIS },
+    carregadores: [],
+  }
+  const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(Painel)))
+  assert.ok(html.includes('0 análises · 0 verificações'))
+  assert.ok(html.includes('Nenhuma análise executada ainda.'))
+  assert.ok(!html.includes('Dados temporariamente indisponíveis'))
+  assert.ok(!html.includes('Tentar novamente'))
 })
 
 for (const [pagina, rota, endereco, esperado] of [

@@ -7,6 +7,13 @@ export const CATEGORIAS = [
   'Outros',
 ]
 
+export const MERCADOS_SUPORTADOS = [
+  { code: 'DE', name: 'Alemanha' },
+  { code: 'BR', name: 'Brasil' },
+  { code: 'ES', name: 'Espanha' },
+  { code: 'FR', name: 'França' },
+]
+
 export const TODAS_CATEGORIAS = 'ALL'
 
 export const TIPOS_REGRA = {

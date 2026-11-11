@@ -41,6 +41,8 @@ src/
 
 `dadosIniciais.js` é usado apenas como fixture dos testes de interface. Não popula a aplicação. Os registros antigos do navegador não são apagados nem migrados automaticamente; a aplicação passa a consultar o PostgreSQL.
 
+O Painel mantém suas seções visíveis durante o carregamento e quando a API está indisponível. Nessa situação, os totais de produtos, regras e análises exibem zero, os quatro mercados suportados continuam listados e um aviso permite tentar novamente. Os valores reais voltam após uma consulta bem-sucedida.
+
 ## Fluxo
 
 1. Cadastre um produto com nome, categoria e descrição.
