@@ -3,7 +3,11 @@
 # =========================
 .env
 .env.*
+!.env.example
 config.json
+.ferramentas/
+.temporario/
+.superpowers/
 
 # =========================
 # Logs
