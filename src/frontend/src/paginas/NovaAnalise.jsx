@@ -25,7 +25,7 @@ export function NovaAnalise() {
       <Cabecalho
         sobretitulo="Verificação"
         titulo="Nova análise"
-        descricao="Escolha a embalagem, os mercados de destino e a data de referência. Só entram as regras vigentes nessa data."
+        descricao="Escolha uma embalagem, os mercados e a data para conferir as regras aplicáveis."
       />
       <Conteudo carregando={carregando} erro={erro}>
         {dados &&

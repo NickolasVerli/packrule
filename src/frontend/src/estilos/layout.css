@@ -131,6 +131,23 @@
   gap: 12px;
 }
 
+.secao__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.secao__cabecalho > .secao__texto {
+  flex: 1 1 220px;
+}
+
+.secao__descricao {
+  max-width: 60ch;
+  color: var(--texto-suave);
+  font-size: 0.9rem;
+}
+
 .divisao {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;

@@ -46,7 +46,7 @@ export function Regras() {
       <Cabecalho
         sobretitulo={dados ? pluralizar(dados.regras.length, 'regra', 'regras') : 'Base de conhecimento'}
         titulo="Regras de conformidade"
-        descricao="Cada regra declara mercado, categoria, vigência e fonte. A data de referência da análise decide quais delas entram."
+        descricao="Organize os critérios que a análise aplica a cada mercado, categoria e período de vigência."
         acoes={
           <Link to="/rules/new" className="botao">
             Nova regra

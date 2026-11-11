@@ -90,7 +90,10 @@ function RevisaoTexto({ versao }) {
 
   return (
     <form className="formulario" onSubmit={salvarFormulario}>
-      <h2>Revisão do texto extraído</h2>
+      <div className="secao__texto">
+        <h2>Revisão do texto extraído</h2>
+        <p className="secao__descricao">Confira o texto lido do arquivo. Suas correções serão usadas nas próximas análises.</p>
+      </div>
       {erroFormulario && <Alerta tom="error">{erroFormulario}</Alerta>}
       {!texto.trim() && (
         <Alerta tom="warning">

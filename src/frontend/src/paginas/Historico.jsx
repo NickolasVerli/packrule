@@ -43,7 +43,7 @@ export function Historico() {
       <Cabecalho
         sobretitulo={dados ? pluralizar(dados.analises.length, 'análise', 'análises') : 'Registro'}
         titulo="Histórico"
-        descricao="Cada análise fica vinculada ao produto e à versão exata da embalagem que foi verificada."
+        descricao="Reveja verificações anteriores e os resultados de cada versão da embalagem."
         acoes={
           <Link to="/analyses/new" className="botao">
             Nova análise

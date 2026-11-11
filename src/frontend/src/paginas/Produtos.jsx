@@ -45,7 +45,7 @@ export function Produtos() {
       <Cabecalho
         sobretitulo={dados ? pluralizar(dados.produtos.length, 'produto', 'produtos') : 'Cadastro'}
         titulo="Produtos"
-        descricao="Cada produto reúne suas versões de embalagem e o histórico de análises."
+        descricao="Organize seus produtos e acompanhe as embalagens, versões e resultados de cada um."
         acoes={
           <Link to="/products/new" className="botao">
             Novo produto

@@ -23,7 +23,7 @@ export function CadastroProduto() {
       <Cabecalho
         sobretitulo="Produtos"
         titulo={editando ? 'Editar produto' : 'Novo produto'}
-        descricao="Nome, categoria e descrição definem quais regras serão aplicadas nas análises."
+        descricao="Identifique o produto e escolha a categoria que orientará as verificações da embalagem."
       />
       <Conteudo carregando={carregando} erro={erro}>
         {dados && <FormularioProduto key={id ?? 'new'} valoresIniciais={dados} produtoId={id} />}

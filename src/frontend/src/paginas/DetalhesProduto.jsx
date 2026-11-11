@@ -69,7 +69,10 @@ export function DetalhesProduto() {
 
             <section className="secao" aria-labelledby="versions-title">
               <div className="secao__cabecalho">
-                <h2 id="versions-title">Versões da embalagem</h2>
+                <div className="secao__texto">
+                  <h2 id="versions-title">Versões da embalagem</h2>
+                  <p className="secao__descricao">Cada nova arte fica em uma versão própria, sem substituir as anteriores.</p>
+                </div>
                 <Link to={`/products/${id}/versions/new`} className="botao botao--contorno botao--pequeno">
                   Nova versão
                 </Link>
@@ -122,7 +125,10 @@ export function DetalhesProduto() {
 
             <section className="secao" aria-labelledby="analyses-title">
               <div className="secao__cabecalho">
-                <h2 id="analyses-title">Análises realizadas</h2>
+                <div className="secao__texto">
+                  <h2 id="analyses-title">Análises realizadas</h2>
+                  <p className="secao__descricao">Consulte os resultados de cada versão e a data usada na verificação.</p>
+                </div>
               </div>
               {dados.analises.length === 0 ? (
                 <ListaVazia
