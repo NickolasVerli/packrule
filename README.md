@@ -33,7 +33,7 @@ npm run dev
 
 Acesse **http://localhost:5173**. A API atende em **http://127.0.0.1:8080/api**. O banco local usa a porta **54329**, e seus dados permanecem em `.temporario/banco-local` após encerrar e reiniciar a aplicação. Os testes usam outro banco, temporário e isolado.
 
-Cadastre um produto, uma regra e uma versão de embalagem; selecione os mercados e execute a análise. França, Alemanha e Espanha já são cadastrados na inicialização. Produtos e regras são cadastrados pelo usuário, sem simular persistência no navegador.
+Cadastre um produto, uma regra e uma versão de embalagem; selecione os mercados e execute a análise. Alemanha, Brasil, Espanha e França já são cadastrados na inicialização. Produtos e regras são cadastrados pelo usuário, sem simular persistência no navegador.
 
 Para usar PostgreSQL instalado ou Docker, configurar OCR, consultar endpoints e entender os critérios da AEP, veja [o README do backend](src/backend/README.md). A organização das telas está no [README do frontend](src/frontend/README.md).
 

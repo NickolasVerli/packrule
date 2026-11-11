@@ -1,5 +1,6 @@
 package br.com.packrule;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -90,7 +91,9 @@ class ProdutosIntegracaoTest extends BancoIntegracao {
     void disponibilizaMercadosCadastradosNoBanco() throws Exception {
         cliente.perform(get("/api/mercados"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3));
-        assertThat(consultas.queryForObject("SELECT count(*) FROM mercado", Long.class)).isEqualTo(3L);
+                .andExpect(jsonPath("$.length()").value(4))
+                .andExpect(jsonPath("$[?(@.code == 'BR')].name").value(hasItem("Brasil")))
+                .andExpect(jsonPath("$[?(@.code == 'BR')].referenceLanguage").value(hasItem("pt")));
+        assertThat(consultas.queryForObject("SELECT count(*) FROM mercado", Long.class)).isEqualTo(4L);
     }
 }

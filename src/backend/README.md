@@ -34,7 +34,7 @@ Para PostgreSQL instalado, crie o banco `packrule` e um usuário com permissão 
 
 ## Banco e integridade
 
-`/database/schema.sql` cria o esquema de forma idempotente, e `/database/dados-iniciais.sql` cadastra os três mercados. Os mesmos arquivos são incluídos no JAR e executados antes da validação do modelo pelo Hibernate (`ddl-auto=validate`). O esquema não é apagado ou recriado a cada inicialização.
+`/database/schema.sql` cria o esquema de forma idempotente, e `/database/dados-iniciais.sql` cadastra os quatro mercados: Alemanha, Brasil, Espanha e França. Os mesmos arquivos são incluídos no JAR e executados antes da validação do modelo pelo Hibernate (`ddl-auto=validate`). O esquema não é apagado ou recriado a cada inicialização.
 
 As tabelas seguem o DER: `produto`, `versao_embalagem`, `mercado`, `regra_regulatoria`, `analise_conformidade`, `achado`, `regra_mercado` e `analise_mercado`. `regra_termo` armazena os termos ordenados e `arquivo_embalagem` armazena o arquivo binário, evitando carregar arquivos ao listar versões.
 

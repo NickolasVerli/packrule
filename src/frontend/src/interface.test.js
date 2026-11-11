@@ -143,6 +143,7 @@ for (const [pagina, rota, endereco, esperado] of [
     assert.ok(!html.includes('Manual Review'))
     assert.ok(!html.includes('Compliance Facts'))
     if (pagina === 'DetalhesEmbalagem') assert.ok(html.includes('/api/embalagens/version-shampoo-1/arquivo'))
+    if (pagina === 'CadastroRegra' || pagina === 'NovaAnalise') assert.ok(html.includes('Brasil'))
   })
 }
 

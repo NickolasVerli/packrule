@@ -2,6 +2,7 @@ export const MERCADOS_INICIAIS = [
   { id: 'market-fr', code: 'FR', name: 'França' },
   { id: 'market-de', code: 'DE', name: 'Alemanha' },
   { id: 'market-es', code: 'ES', name: 'Espanha' },
+  { id: 'market-br', code: 'BR', name: 'Brasil' },
 ]
 
 const IDS_MERCADOS = ['market-fr', 'market-de', 'market-es']
